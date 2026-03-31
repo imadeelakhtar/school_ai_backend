@@ -9,7 +9,30 @@ from typing import List
 import csv
 import io
 import openpyxl
+def parse_file_to_rows(content: bytes, filename: str) -> list:
+    ext = filename.rsplit(".", 1)[-1].lower()
 
+    if ext in ("xlsx", "xls"):
+        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        if not rows:
+            return []
+        headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+        result = []
+        for row in rows[1:]:
+            if all(cell is None for cell in row):
+                continue
+            row_dict = {headers[i]: (str(row[i]).strip() if row[i] is not None else "") for i in range(len(headers))}
+            result.append(row_dict)
+        return result
+    else:
+        text = content.decode("utf-8-sig")
+        reader = csv.DictReader(io.StringIO(text))
+        return [
+            {k.strip().lower(): v.strip() for k, v in row.items()}
+            for row in reader
+        ]
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
 app.add_middleware(
