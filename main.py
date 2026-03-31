@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from typing import List
 import csv
 import io
+import openpyxl
 
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
