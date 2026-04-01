@@ -9,32 +9,7 @@ from typing import List
 import csv
 import io
 import openpyxl
-def parse_file_to_rows(content: bytes, filename: str) -> list:
-    ext = filename.rsplit(".", 1)[-1].lower()
 
-    if ext in ("xlsx", "xls"):
-        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-        ws = wb.active
-        rows = list(ws.iter_rows(values_only=True))
-        if not rows:
-            return []
-        headers = [str(h).strip().lower() if h else "" for h in rows[0]]
-        result = []
-        for row in rows[1:]:
-            if all(cell is None for cell in row):
-                continue
-            row_dict = {headers[i]: (str(row[i]).strip() if row[i] is not None else "") for i in range(len(headers))}
-            result.append(row_dict)
-        return result
-    else:
-       try:
-    rows = parse_file_to_rows(content, file.filename)
-except Exception as e:
-    return {"error": f"File parse nahi ho saka: {str(e)}"}
-        return [
-            {k.strip().lower(): v.strip() for k, v in row.items()}
-            for row in reader
-        ]
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
 app.add_middleware(
@@ -86,37 +61,61 @@ def setup_school_tables():
     cur.close()
     conn.close()
 
-# ── Health Check ──────────────────────────────────────────────────────
+def parse_file_to_rows(content: bytes, filename: str) -> list:
+    ext = filename.rsplit(".", 1)[-1].lower()
+    if ext in ("xlsx", "xls"):
+        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        if not rows:
+            return []
+        headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+        result = []
+        for row in rows[1:]:
+            if all(cell is None for cell in row):
+                continue
+            row_dict = {headers[i]: (str(row[i]).strip() if row[i] is not None else "") for i in range(len(headers))}
+            result.append(row_dict)
+        return result
+    else:
+        text = content.decode("utf-8-sig")
+        reader = csv.DictReader(io.StringIO(text))
+        return [{k.strip().lower(): v.strip() for k, v in row.items()} for row in reader]
+
 @app.get("/")
 def root():
     return {"status": "SubstituteAI is running!"}
 
-# ── Upload CSV ────────────────────────────────────────────────────────
 @app.post("/upload")
 async def upload_timetable(
     school_name: str = Form(...),
     file: UploadFile = File(...)
 ):
     content = await file.read()
-    text = content.decode("utf-8-sig")
-    reader = csv.DictReader(io.StringIO(text))
+    try:
+        rows = parse_file_to_rows(content, file.filename)
+    except Exception as e:
+        return {"error": f"File parse nahi ho saka: {str(e)}"}
 
     conn = get_connection()
     cur = conn.cursor()
-
-    # Create or get school
     cur.execute("INSERT INTO schools (name) VALUES (%s) RETURNING id", (school_name,))
     school_id = cur.fetchone()[0]
 
     rows_inserted = 0
     teachers_seen = {}
 
-    for row in reader:
+    for row in rows:
         cls     = row.get("class", "").strip()
         day     = row.get("day", "").strip()
-        period  = int(row.get("period", 0))
+        period  = row.get("period", "0").strip()
         subject = row.get("subject", "").strip()
         teacher = row.get("teacher", "").strip()
+
+        try:
+            period = int(float(period))
+        except (ValueError, TypeError):
+            continue
 
         if not all([cls, day, period, subject, teacher]):
             continue
@@ -126,13 +125,11 @@ async def upload_timetable(
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (school_id, cls, day, period, subject, teacher))
 
-        # Track teacher workload and subject
         if teacher not in teachers_seen:
             teachers_seen[teacher] = {"subject": subject, "workload": 0}
         teachers_seen[teacher]["workload"] += 1
         rows_inserted += 1
 
-    # Insert teachers
     for name, info in teachers_seen.items():
         cur.execute("""
             INSERT INTO teachers (school_id, name, subject, workload)
@@ -152,7 +149,6 @@ async def upload_timetable(
         "teachers_found": len(teachers_seen)
     }
 
-# ── Get Teachers ──────────────────────────────────────────────────────
 @app.get("/teachers/{school_id}")
 def get_teachers(school_id: int):
     conn = get_connection()
@@ -169,7 +165,6 @@ def get_teachers(school_id: int):
         for r in rows
     ]
 
-# ── Get Classes ───────────────────────────────────────────────────────
 @app.get("/classes/{school_id}")
 def get_classes(school_id: int):
     conn = get_connection()
@@ -180,7 +175,6 @@ def get_classes(school_id: int):
     conn.close()
     return [r[0] for r in rows]
 
-# ── Get Subjects ──────────────────────────────────────────────────────
 @app.get("/subjects/{school_id}")
 def get_subjects(school_id: int):
     conn = get_connection()
@@ -191,10 +185,9 @@ def get_subjects(school_id: int):
     conn.close()
     return [r[0] for r in rows]
 
-# ── AI Substitute ─────────────────────────────────────────────────────
 class AbsentTeacher(BaseModel):
     name: str
-    leave_type: str  # full, first, second
+    leave_type: str
 
 class SubstituteRequest(BaseModel):
     school_id: int
@@ -217,7 +210,6 @@ def auto_substitute(req: SubstituteRequest):
     )
     return result
 
-# ── Logs ──────────────────────────────────────────────────────────────
 @app.get("/logs")
 def get_logs():
     conn = get_connection()
