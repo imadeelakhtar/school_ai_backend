@@ -15,7 +15,7 @@ import google.generativeai as genai
 
 # Gemini setup
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-gemini = genai.GenerativeModel("gemini-1.5-flash")
+gemini = genai.GenerativeModel("gemini-2.0-flash")
 
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
