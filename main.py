@@ -13,7 +13,6 @@ import os
 import json
 from google import genai
 
-# Gemini setup
 gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
@@ -68,7 +67,6 @@ def setup_school_tables():
     conn.close()
 
 def extract_raw_rows(content: bytes, filename: str) -> list:
-    """Excel/CSV se raw rows extract karo"""
     ext = filename.rsplit(".", 1)[-1].lower()
     if ext in ("xlsx", "xls"):
         wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
@@ -81,14 +79,11 @@ def extract_raw_rows(content: bytes, filename: str) -> list:
         return [row for row in reader]
 
 def parse_with_gemini(raw_rows: list) -> list:
-    """Gemini AI se data parse karwao — koi bhi format ho"""
-    
-    # Sirf pehle 50 rows bhejo (token limit ke liye)
     sample = raw_rows[:50]
     sample_text = "\n".join([", ".join(row) for row in sample])
-    
+
     prompt = f"""
-You are a data parser for school timetables. 
+You are a data parser for school timetables.
 Below is raw data from an Excel/CSV file. It may have any format, column names, or structure.
 
 Your job is to extract timetable rows and return ONLY a JSON array.
@@ -98,30 +93,24 @@ Rules:
 - "period" must be a number (1-8)
 - "day" must be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
 - Skip rows that don't have all 5 fields
-- Return ONLY the JSON array, no explanation, no markdown
+- Return ONLY the JSON array, no explanation, no markdown backticks
 
 Raw data:
 {sample_text}
 """
-    
+
     response = gemini_client.models.generate_content(
-    model="gemini-2.0-flash",
-    contents=prompt
-)
-text = response.text.strip()
-    
-    # Clean JSON
-    if "```" in text:
-       # Clean JSON
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
+    text = response.text.strip()
+
     if "```" in text:
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
     text = text.strip()
 
-    return json.loads(text)
-    text = text.strip()
-    
     return json.loads(text)
 
 @app.get("/")
@@ -134,12 +123,12 @@ async def upload_timetable(
     file: UploadFile = File(...)
 ):
     content = await file.read()
-    
+
     try:
         raw_rows = extract_raw_rows(content, file.filename)
     except Exception as e:
         return {"error": f"File read nahi ho saka: {str(e)}"}
-    
+
     try:
         rows = parse_with_gemini(raw_rows)
     except Exception as e:
@@ -154,11 +143,11 @@ async def upload_timetable(
     teachers_seen = {}
 
     for row in rows:
-        cls     = str(row.get("class", "")).strip()
-        day     = str(row.get("day", "")).strip()
+        cls = str(row.get("class", "")).strip()
+        day = str(row.get("day", "")).strip()
         subject = str(row.get("subject", "")).strip()
         teacher = str(row.get("teacher", "")).strip()
-        
+
         try:
             period = int(float(str(row.get("period", 0))))
         except (ValueError, TypeError):
