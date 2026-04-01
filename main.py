@@ -11,11 +11,10 @@ import io
 import openpyxl
 import os
 import json
-import google.generativeai as genai
+from google import genai
 
 # Gemini setup
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-gemini = genai.GenerativeModel("gemini-2.0-flash")
+gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
@@ -105,8 +104,11 @@ Raw data:
 {sample_text}
 """
     
-    response = gemini.generate_content(prompt)
-    text = response.text.strip()
+    response = gemini_client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=prompt
+)
+text = response.text.strip()
     
     # Clean JSON
     if "```" in text:
