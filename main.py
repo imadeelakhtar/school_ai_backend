@@ -27,8 +27,10 @@ def parse_file_to_rows(content: bytes, filename: str) -> list:
             result.append(row_dict)
         return result
     else:
-        text = content.decode("utf-8-sig")
-        reader = csv.DictReader(io.StringIO(text))
+       try:
+    rows = parse_file_to_rows(content, file.filename)
+except Exception as e:
+    return {"error": f"File parse nahi ho saka: {str(e)}"}
         return [
             {k.strip().lower(): v.strip() for k, v in row.items()}
             for row in reader
