@@ -112,9 +112,14 @@ text = response.text.strip()
     
     # Clean JSON
     if "```" in text:
+       # Clean JSON
+    if "```" in text:
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
+    text = text.strip()
+
+    return json.loads(text)
     text = text.strip()
     
     return json.loads(text)
