@@ -9,6 +9,13 @@ from typing import List
 import csv
 import io
 import openpyxl
+import os
+import json
+import google.generativeai as genai
+
+# Gemini setup
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+gemini = genai.GenerativeModel("gemini-1.5-flash")
 
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
@@ -61,26 +68,54 @@ def setup_school_tables():
     cur.close()
     conn.close()
 
-def parse_file_to_rows(content: bytes, filename: str) -> list:
+def extract_raw_rows(content: bytes, filename: str) -> list:
+    """Excel/CSV se raw rows extract karo"""
     ext = filename.rsplit(".", 1)[-1].lower()
     if ext in ("xlsx", "xls"):
         wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
         ws = wb.active
         rows = list(ws.iter_rows(values_only=True))
-        if not rows:
-            return []
-        headers = [str(h).strip().lower() if h else "" for h in rows[0]]
-        result = []
-        for row in rows[1:]:
-            if all(cell is None for cell in row):
-                continue
-            row_dict = {headers[i]: (str(row[i]).strip() if row[i] is not None else "") for i in range(len(headers))}
-            result.append(row_dict)
-        return result
+        return [[str(cell) if cell is not None else "" for cell in row] for row in rows]
     else:
         text = content.decode("utf-8-sig")
-        reader = csv.DictReader(io.StringIO(text))
-        return [{k.strip().lower(): v.strip() for k, v in row.items()} for row in reader]
+        reader = csv.reader(io.StringIO(text))
+        return [row for row in reader]
+
+def parse_with_gemini(raw_rows: list) -> list:
+    """Gemini AI se data parse karwao — koi bhi format ho"""
+    
+    # Sirf pehle 50 rows bhejo (token limit ke liye)
+    sample = raw_rows[:50]
+    sample_text = "\n".join([", ".join(row) for row in sample])
+    
+    prompt = f"""
+You are a data parser for school timetables. 
+Below is raw data from an Excel/CSV file. It may have any format, column names, or structure.
+
+Your job is to extract timetable rows and return ONLY a JSON array.
+Each object must have exactly these keys: "class", "day", "period", "subject", "teacher"
+
+Rules:
+- "period" must be a number (1-8)
+- "day" must be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+- Skip rows that don't have all 5 fields
+- Return ONLY the JSON array, no explanation, no markdown
+
+Raw data:
+{sample_text}
+"""
+    
+    response = gemini.generate_content(prompt)
+    text = response.text.strip()
+    
+    # Clean JSON
+    if "```" in text:
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+    text = text.strip()
+    
+    return json.loads(text)
 
 @app.get("/")
 def root():
@@ -92,10 +127,16 @@ async def upload_timetable(
     file: UploadFile = File(...)
 ):
     content = await file.read()
+    
     try:
-        rows = parse_file_to_rows(content, file.filename)
+        raw_rows = extract_raw_rows(content, file.filename)
     except Exception as e:
-        return {"error": f"File parse nahi ho saka: {str(e)}"}
+        return {"error": f"File read nahi ho saka: {str(e)}"}
+    
+    try:
+        rows = parse_with_gemini(raw_rows)
+    except Exception as e:
+        return {"error": f"AI parse failed: {str(e)}"}
 
     conn = get_connection()
     cur = conn.cursor()
@@ -106,14 +147,13 @@ async def upload_timetable(
     teachers_seen = {}
 
     for row in rows:
-        cls     = row.get("class", "").strip()
-        day     = row.get("day", "").strip()
-        period  = row.get("period", "0").strip()
-        subject = row.get("subject", "").strip()
-        teacher = row.get("teacher", "").strip()
-
+        cls     = str(row.get("class", "")).strip()
+        day     = str(row.get("day", "")).strip()
+        subject = str(row.get("subject", "")).strip()
+        teacher = str(row.get("teacher", "")).strip()
+        
         try:
-            period = int(float(period))
+            period = int(float(str(row.get("period", 0))))
         except (ValueError, TypeError):
             continue
 
