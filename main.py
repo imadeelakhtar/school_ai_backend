@@ -6,14 +6,15 @@ from db import get_connection
 from logger import setup_log_table
 from pydantic import BaseModel
 from typing import List
+from groq import Groq
 import csv
 import io
 import openpyxl
 import os
 import json
 
-from groq import Groq
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
 app.add_middleware(
@@ -77,12 +78,11 @@ def extract_raw_rows(content: bytes, filename: str) -> list:
         reader = csv.reader(io.StringIO(text))
         return [row for row in reader]
 
-def parse_with_gemini(raw_rows: list) -> list:
+def parse_with_ai(raw_rows: list) -> list:
     sample = raw_rows[:50]
     sample_text = "\n".join([", ".join(row) for row in sample])
 
-    prompt = f"""
-You are a data parser for school timetables.
+    prompt = f"""You are a data parser for school timetables.
 Below is raw data from an Excel/CSV file. It may have any format, column names, or structure.
 
 Your job is to extract timetable rows and return ONLY a JSON array.
@@ -95,15 +95,14 @@ Rules:
 - Return ONLY the JSON array, no explanation, no markdown backticks
 
 Raw data:
-{sample_text}
-"""
+{sample_text}"""
 
-   response = groq_client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0
-)
-text = response.choices[0].message.content.strip()
+    response = groq_client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    text = response.choices[0].message.content.strip()
 
     if "```" in text:
         text = text.split("```")[1]
@@ -130,7 +129,7 @@ async def upload_timetable(
         return {"error": f"File read nahi ho saka: {str(e)}"}
 
     try:
-        rows = parse_with_gemini(raw_rows)
+        rows = parse_with_ai(raw_rows)
     except Exception as e:
         return {"error": f"AI parse failed: {str(e)}"}
 
