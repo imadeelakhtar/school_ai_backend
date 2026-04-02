@@ -103,7 +103,6 @@ Raw data:
     temperature=0,
     max_tokens=4096
 )
-    )
     text = response.choices[0].message.content.strip()
 
     if "```" in text:
