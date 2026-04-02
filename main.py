@@ -98,9 +98,11 @@ Raw data:
 {sample_text}"""
 
     response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
+    model="llama-3.3-70b-versatile",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0,
+    max_tokens=4096
+)
     )
     text = response.choices[0].message.content.strip()
 
