@@ -11,10 +11,9 @@ import io
 import openpyxl
 import os
 import json
-import google.genai as genai
 
-gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-
+from groq import Groq
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 app = FastAPI(title="SubstituteAI Backend", version="2.0")
 
 app.add_middleware(
@@ -99,11 +98,12 @@ Raw data:
 {sample_text}
 """
 
-    response = gemini_client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
-    )
-    text = response.text.strip()
+   response = groq_client.chat.completions.create(
+    model="llama-3.3-70b-versatile",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0
+)
+text = response.choices[0].message.content.strip()
 
     if "```" in text:
         text = text.split("```")[1]
