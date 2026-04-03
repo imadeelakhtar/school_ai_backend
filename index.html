@@ -454,7 +454,7 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
   <div class="auth-card">
 
     <div class="auth-logo-area">
-      <div class="auth-logo-icon">🎓</div>
+      <img src="images/logo.png" alt="Saksham AI Logo" style="width:48px;height:48px;border-radius:12px;object-fit:cover;box-shadow:0 4px 20px #4f8eff44;">
       <div>
         <div class="auth-logo-text">Saksham <span>AI</span></div>
         <div style="font-size:11px;color:var(--muted);letter-spacing:0.5px">AI Platform for Smart Teachers</div>
@@ -469,13 +469,32 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
 
     <!-- LOGIN FORM -->
     <div class="auth-form active" id="form-login">
-      <div class="auth-title">Welcome Back 👋</div>
-      <div class="auth-subtitle">Login karo apne account mein</div>
+      <div class="auth-title">Welcome Back</div>
+      <div class="auth-subtitle">Sign in to access your dashboard</div>
       <div id="login-error" class="auth-error"></div>
-      <div class="field-group">
-        <label>Email Address ya Teacher ID</label>
-        <input type="text" class="field-input" id="login-identifier" placeholder="email@school.com ya TEACHER-ID">
+
+      <!-- Login choice tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;background:var(--bg3);border-radius:10px;padding:4px;">
+        <button class="login-choice-btn active" id="choice-email-btn" onclick="switchLoginChoice('email')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--card);color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border2);transition:all 0.2s;">📧 Email</button>
+        <button class="login-choice-btn" id="choice-id-btn" onclick="switchLoginChoice('schoolid')" style="flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">🪪 School ID</button>
       </div>
+
+      <!-- Email login -->
+      <div id="login-email-fields">
+        <div class="field-group">
+          <label>Email Address</label>
+          <input type="email" class="field-input" id="login-email" placeholder="teacher@school.com" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+
+      <!-- School ID login -->
+      <div id="login-schoolid-fields" style="display:none">
+        <div class="field-group">
+          <label>School ID</label>
+          <input type="text" class="field-input" id="login-schoolid" placeholder="e.g. SCH-2024-XXXXX" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+
       <div class="field-group">
         <label>Password</label>
         <input type="password" class="field-input" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
@@ -485,24 +504,24 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
 
     <!-- REGISTER FORM -->
     <div class="auth-form" id="form-register">
-      <div class="auth-title">Create Account ✨</div>
-      <div class="auth-subtitle">Delhi Govt Teacher ke liye free registration</div>
+      <div class="auth-title">Create Account</div>
+      <div class="auth-subtitle">Register to get started with Saksham AI</div>
       <div id="register-error" class="auth-error"></div>
       <div class="field-group">
         <label>Full Name</label>
-        <input type="text" class="field-input" id="reg-name" placeholder="Ramesh Kumar">
+        <input type="text" class="field-input" id="reg-name" placeholder="e.g. Ramesh Kumar">
       </div>
       <div class="field-group">
         <label>Email Address</label>
         <input type="email" class="field-input" id="reg-email" placeholder="teacher@school.com">
       </div>
       <div class="field-group">
-        <label>Delhi Govt Teacher Unique ID</label>
-        <input type="text" class="field-input" id="reg-uid" placeholder="e.g. DSSSB-2024-XXXXX">
+        <label>School ID</label>
+        <input type="text" class="field-input" id="reg-uid" placeholder="e.g. SCH-2024-XXXXX">
       </div>
       <div class="field-group">
         <label>Password</label>
-        <input type="password" class="field-input" id="reg-password" placeholder="Min 6 characters">
+        <input type="password" class="field-input" id="reg-password" placeholder="Minimum 6 characters">
       </div>
       <button class="auth-btn" onclick="doRegister()" id="register-btn">Create Account →</button>
     </div>
@@ -517,7 +536,7 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
   <header>
     <!-- Professional Logo -->
     <div class="header-logo">
-      <div class="logo-icon">🎓</div>
+      <img src="images/logo.png" alt="Saksham AI" style="width:40px;height:40px;border-radius:10px;object-fit:cover;box-shadow:0 4px 16px #4f8eff44;">
       <div class="logo-text-group">
         <div class="logo-name">Saksham <span>AI</span></div>
         <div class="logo-tagline">AI Platform for Smart Teachers</div>
@@ -760,19 +779,19 @@ window.doRegister = async () => {
   const uid = document.getElementById('reg-uid').value.trim();
   const password = document.getElementById('reg-password').value;
 
-  if (!name) { showRegError('Name daalo!'); return; }
-  if (!email) { showRegError('Email daalo!'); return; }
-  if (!uid) { showRegError('Teacher ID daalo!'); return; }
-  if (password.length < 6) { showRegError('Password min 6 characters ka hona chahiye!'); return; }
+  if (!name) { showRegError('Please enter your full name.'); return; }
+  if (!email) { showRegError('Please enter your email address.'); return; }
+  if (!uid) { showRegError('Please enter your School ID.'); return; }
+  if (password.length < 6) { showRegError('Password must be at least 6 characters.'); return; }
 
   const btn = document.getElementById('register-btn');
   btn.disabled = true; btn.textContent = 'Creating...';
 
   try {
-    // Check if teacher ID already exists
+    // Check if School ID already exists
     const q = query(collection(db, 'teachers'), where('teacherId', '==', uid));
     const existing = await getDocs(q);
-    if (!existing.empty) { showRegError('Ye Teacher ID already registered hai!'); btn.disabled = false; btn.textContent = 'Create Account →'; return; }
+    if (!existing.empty) { showRegError('This School ID is already registered.'); btn.disabled = false; btn.textContent = 'Create Account →'; return; }
 
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(userCred.user, { displayName: name });
@@ -789,28 +808,29 @@ window.doRegister = async () => {
 
 // Login — email ya teacher ID dono se
 window.doLogin = async () => {
-  const identifier = document.getElementById('login-identifier').value.trim();
   const password = document.getElementById('login-password').value;
-
-  if (!identifier) { showLoginError('Email ya Teacher ID daalo!'); return; }
-  if (!password) { showLoginError('Password daalo!'); return; }
+  if (!password) { showLoginError('Please enter your password.'); return; }
 
   const btn = document.getElementById('login-btn');
   btn.disabled = true; btn.textContent = 'Signing in...';
 
   try {
-    let emailToUse = identifier;
+    let emailToUse = '';
 
-    // Agar email nahi hai (@ nahi) toh Teacher ID se email dhundho
-    if (!identifier.includes('@')) {
-      const q = query(collection(db, 'teachers'), where('teacherId', '==', identifier));
+    if (currentLoginChoice === 'email') {
+      emailToUse = document.getElementById('login-email').value.trim();
+      if (!emailToUse) { showLoginError('Please enter your email address.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+    } else {
+      const schoolId = document.getElementById('login-schoolid').value.trim();
+      if (!schoolId) { showLoginError('Please enter your School ID.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+      const q = query(collection(db, 'teachers'), where('teacherId', '==', schoolId));
       const snap = await getDocs(q);
-      if (snap.empty) { showLoginError('Teacher ID nahi mili! Check karo.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+      if (snap.empty) { showLoginError('School ID not found. Please check and try again.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
       emailToUse = snap.docs[0].data().email;
     }
 
     await signInWithEmailAndPassword(auth, emailToUse, password);
-    showToast('✓ Login successful!', 'success');
+    showToast('✓ Login successful! Welcome back.', 'success');
   } catch (err) {
     showLoginError(getFirebaseError(err.code));
     btn.disabled = false; btn.textContent = 'Sign In →';
@@ -860,6 +880,18 @@ document.addEventListener('mousemove', (e) => {
   if(d2)d2.style.transform=`translate(${-x*30}px,${-y*30}px) rotate(${-x*8}deg) scale(0.97)`;
   if(d3)d3.style.transform=`translate(${x*25}px,${-y*25}px) rotate(${x*15}deg) scale(1.02)`;
 });
+
+// Login choice switch
+let currentLoginChoice = 'email';
+window.switchLoginChoice = (choice) => {
+  currentLoginChoice = choice;
+  document.getElementById('login-email-fields').style.display = choice === 'email' ? 'block' : 'none';
+  document.getElementById('login-schoolid-fields').style.display = choice === 'schoolid' ? 'block' : 'none';
+  document.getElementById('choice-email-btn').style.background = choice === 'email' ? 'var(--card)' : 'transparent';
+  document.getElementById('choice-email-btn').style.color = choice === 'email' ? 'var(--text)' : 'var(--muted)';
+  document.getElementById('choice-id-btn').style.background = choice === 'schoolid' ? 'var(--card)' : 'transparent';
+  document.getElementById('choice-id-btn').style.color = choice === 'schoolid' ? 'var(--text)' : 'var(--muted)';
+};
 
 // Auth tabs
 window.switchAuthTab = (tab, btn) => {
