@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from substitute_engine import get_top_substitutes
 from availability import get_free_teachers
@@ -247,6 +247,7 @@ def auto_substitute(req: SubstituteRequest):
     return result
 
 @app.get("/logs")
+
 def get_logs():
     conn = get_connection()
     cur = conn.cursor()
@@ -266,3 +267,32 @@ def get_logs():
         }
         for r in rows
     ]
+@app.post("/generate_test")
+async def generate_test(request: Request):
+    body = await request.json()
+    prompt = body.get("prompt", "")
+    
+    if not prompt:
+        return {"error": "Prompt is required"}
+    
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=4096
+        )
+        text = response.choices[0].message.content.strip()
+        
+        if "```" in text:
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        text = text.strip()
+        
+        import json
+        paper = json.loads(text)
+        return {"paper": paper}
+        
+    except Exception as e:
+        return {"error": str(e)}
