@@ -275,30 +275,81 @@ def get_logs():
     ]
 @app.post("/generate_test")
 async def generate_test(request: Request):
-    body = await request.json()
-    prompt = body.get("prompt", "")
-    
+    import base64
+    import fitz  # PyMuPDF
+    from PIL import Image
+    import io as _io
+
+    form = await request.form()
+    prompt = form.get("prompt", "")
+    syllabus_file = form.get("syllabus_file", None)
+
+    image_data = None
+    extracted_text = ""
+
+    # File processing
+    if syllabus_file and hasattr(syllabus_file, 'read'):
+        file_bytes = await syllabus_file.read()
+        filename = syllabus_file.filename.lower()
+
+        if filename.endswith(".pdf"):
+            # PDF se text extract karo
+            pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
+            for page in pdf_doc:
+                extracted_text += page.get_text()
+            pdf_doc.close()
+
+        elif filename.endswith((".jpg", ".jpeg", ".png")):
+            # Image ko base64 mein convert karo
+            image_data = base64.b64encode(file_bytes).decode('utf-8')
+            ext = "jpeg" if "jpg" in filename or "jpeg" in filename else "png"
+
+    # Prompt mein extracted text add karo
+    if extracted_text:
+        prompt = prompt + f"\n\nAdditional syllabus content from uploaded file:\n{extracted_text[:3000]}"
+
     if not prompt:
         return {"error": "Prompt is required"}
-    
+
     try:
+        # Image wala request
+        if image_data:
+            messages = [{
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/{ext};base64,{image_data}"}
+                    },
+                    {
+                        "type": "text",
+                        "text": prompt
+                    }
+                ]
+            }]
+            # Vision ke liye alag model
+            model = "llama-3.2-11b-vision-preview"
+        else:
+            messages = [{"role": "user", "content": prompt}]
+            model = "llama-3.3-70b-versatile"
+
         response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
+            model=model,
+            messages=messages,
             temperature=0.7,
             max_tokens=4096
         )
         text = response.choices[0].message.content.strip()
-        
+
         if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
         text = text.strip()
-        
+
         import json
         paper = json.loads(text)
         return {"paper": paper}
-        
+
     except Exception as e:
         return {"error": str(e)}
