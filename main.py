@@ -79,30 +79,30 @@ def extract_raw_rows(content: bytes, filename: str) -> list:
         return [row for row in reader]
 
 def parse_with_ai(raw_rows: list) -> list:
-    sample = raw_rows[:50]
+    sample = raw_rows[:20]  # 50 se 20 karo
     sample_text = "\n".join([", ".join(row) for row in sample])
 
     prompt = f"""You are a data parser for school timetables.
-Below is raw data from an Excel/CSV file. It may have any format, column names, or structure.
+Below is raw data from an Excel/CSV file.
 
-Your job is to extract timetable rows and return ONLY a JSON array.
+Extract timetable rows and return ONLY a JSON array.
 Each object must have exactly these keys: "class", "day", "period", "subject", "teacher"
 
 Rules:
 - "period" must be a number (1-8)
 - "day" must be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
-- Skip rows that don't have all 5 fields
-- Return ONLY the JSON array, no explanation, no markdown backticks
+- Skip rows missing any field
+- Return ONLY valid JSON array, no markdown, no explanation
 
 Raw data:
 {sample_text}"""
 
     response = groq_client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0,
-    max_tokens=4096
-)
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0,
+        max_tokens=4096
+    )
     text = response.choices[0].message.content.strip()
 
     if "```" in text:
@@ -110,6 +110,12 @@ Raw data:
         if text.startswith("json"):
             text = text[4:]
     text = text.strip()
+
+    # Fix truncated JSON
+    if not text.endswith("]"):
+        last = text.rfind("}")
+        if last != -1:
+            text = text[:last + 1] + "]"
 
     return json.loads(text)
 
