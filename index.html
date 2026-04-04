@@ -7,714 +7,358 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #050709;
-  --bg2: #0d1117;
-  --bg3: #161b24;
-  --card: #1a2030;
-  --border: #ffffff0f;
-  --border2: #ffffff1a;
-  --accent: #4f8eff;
-  --accent2: #7b5ea7;
-  --green: #2ecc8a;
-  --amber: #f0a500;
-  --red: #e05555;
-  --text: #e8eaf0;
-  --muted: #8891a4;
-  --dim: #4a5263;
-  --teacher: #4f8eff;
-  --student: #2ecc8a;
+  --bg: #050709; --bg2: #0d1117; --bg3: #161b24; --card: #1a2030;
+  --border: #ffffff0f; --border2: #ffffff1a;
+  --accent: #4f8eff; --accent2: #7b5ea7;
+  --green: #2ecc8a; --amber: #f0a500; --red: #e05555;
+  --text: #e8eaf0; --muted: #8891a4; --dim: #4a5263;
+  --teacher: #4f8eff; --student: #2ecc8a;
 }
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:56px 56px; pointer-events:none; z-index:0; }
+.blob { position:fixed; border-radius:50%; filter:blur(140px); pointer-events:none; z-index:0; }
+.blob-a { width:700px; height:700px; background:#4f8eff18; top:-200px; left:-150px; }
+.blob-b { width:600px; height:600px; background:#7b5ea718; bottom:-150px; right:-100px; }
+.blob-c { width:400px; height:400px; background:#2ecc8a10; top:40%; left:50%; transform:translateX(-50%); }
 
-/* ── GLOBAL GRID BG ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 56px 56px;
-  pointer-events: none; z-index: 0;
-}
+/* ── SCREENS: default hidden, shown via JS only ── */
+#splash      { position:fixed; inset:0; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg); transition:opacity 0.6s ease, visibility 0.6s ease; }
+#splash.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+#auth-screen { position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
+#auth-screen.show { display:flex; }
+#app-screen  { display:none; min-height:100vh; }
+#app-screen.show { display:block; }
 
-/* ── BLOBS ── */
-.blob { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; z-index: 0; }
-.blob-a { width: 700px; height: 700px; background: #4f8eff18; top: -200px; left: -150px; }
-.blob-b { width: 600px; height: 600px; background: #7b5ea718; bottom: -150px; right: -100px; }
-.blob-c { width: 400px; height: 400px; background: #2ecc8a10; top: 40%; left: 50%; transform: translateX(-50%); }
+/* ── SPLASH ── */
+.splash-logo { display:flex; align-items:center; gap:16px; margin-bottom:32px; }
+.splash-icon { width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg,#4f8eff,#7b5ea7); display:flex; align-items:center; justify-content:center; box-shadow:0 0 60px #4f8eff44; animation:iconPulse 3s ease-in-out infinite; flex-shrink:0; }
+@keyframes iconPulse { 0%,100%{box-shadow:0 0 60px #4f8eff44;} 50%{box-shadow:0 0 100px #4f8eff66;} }
+.splash-title { font-family:'Syne',sans-serif; font-size:clamp(48px,8vw,80px); font-weight:800; letter-spacing:-3px; line-height:1; overflow:hidden; }
+.splash-title .word { display:inline-block; opacity:0; transform:translateY(60px); animation:wordReveal 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.splash-title .word-saksham { background:linear-gradient(135deg,#ffffff 40%,#8baeff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation-delay:0.2s; }
+.splash-title .word-ai { color:var(--accent); -webkit-text-fill-color:var(--accent); animation-delay:0.45s; margin-left:16px; }
+@keyframes wordReveal { to { opacity:1; transform:translateY(0); } }
+.splash-tagline { font-size:16px; color:var(--muted); font-weight:300; letter-spacing:0.5px; opacity:0; animation:fadeUp 0.8s 0.9s ease forwards; margin-bottom:64px; text-align:center; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px);}  to{opacity:1;transform:translateY(0);} }
+.splash-btn { position:relative; padding:18px 56px; border-radius:50px; border:none; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; background:linear-gradient(135deg,#4f8eff,#7b5ea7); color:#fff; box-shadow:0 8px 40px #4f8eff44; opacity:0; animation:fadeUp 0.8s 1.2s ease forwards; transition:transform 0.2s,box-shadow 0.2s; overflow:hidden; }
+.splash-btn:hover { transform:translateY(-3px); box-shadow:0 16px 60px #4f8eff66; }
+.splash-line { position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#4f8eff,#7b5ea7,transparent); animation:lineScan 3s linear infinite; opacity:0.4; }
+@keyframes lineScan { 0%{transform:scaleX(0) translateX(-100%);} 50%{transform:scaleX(1) translateX(0);} 100%{transform:scaleX(0) translateX(100%);} }
 
-/* ════════════════════════════════════════
-   SPLASH SCREEN
-════════════════════════════════════════ */
-#splash {
-  position: fixed; inset: 0; z-index: 1000;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  background: var(--bg);
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-}
-#splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+/* ── AUTH ── */
+.auth-wrapper { width:100%; max-width:520px; animation:scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes scaleIn { from{opacity:0;transform:scale(0.9) translateY(20px);} to{opacity:1;transform:scale(1) translateY(0);} }
+.auth-card { background:var(--card); border:1px solid var(--border2); border-radius:28px; padding:44px 40px; box-shadow:0 40px 120px #00000099; position:relative; z-index:1; }
+.auth-header { text-align:center; margin-bottom:36px; }
+.auth-brand { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+.auth-brand-icon { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#4f8eff,#7b5ea7); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 24px #4f8eff44; }
+.auth-brand-name { font-family:'Syne',sans-serif; font-weight:800; font-size:24px; letter-spacing:-0.5px; }
+.auth-brand-name span { color:var(--accent); }
+.portal-toggle { display:flex; gap:0; background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:6px; }
+.portal-btn { flex:1; padding:14px 20px; border:none; border-radius:12px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s; background:transparent; color:var(--muted); display:flex; align-items:center; justify-content:center; gap:8px; }
+.portal-btn.active-teacher { background:linear-gradient(135deg,#4f8eff22,#4f8eff11); color:var(--teacher); border:1px solid #4f8eff33; box-shadow:0 4px 20px #4f8eff11; }
+.portal-btn.active-student { background:linear-gradient(135deg,#2ecc8a22,#2ecc8a11); color:var(--student); border:1px solid #2ecc8a33; box-shadow:0 4px 20px #2ecc8a11; }
+.auth-form-section { display:none; margin-top:28px; }
+.auth-form-section.active { display:block; animation:fadeUp 0.3s ease; }
+.form-input { width:100%; padding:14px 16px; background:var(--bg3); border:1px solid var(--border2); border-radius:12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; transition:border-color 0.2s,box-shadow 0.2s; margin-bottom:14px; }
+.form-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px #4f8eff15; }
+.form-input.sf:focus { border-color:var(--green); box-shadow:0 0 0 3px #2ecc8a15; }
+.form-input::placeholder { color:var(--dim); }
+.form-tabs { display:flex; gap:6px; margin-bottom:20px; background:var(--bg3); border-radius:10px; padding:4px; }
+.form-tab { flex:1; padding:9px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.form-tab.active { background:var(--card); color:var(--text); border:1px solid var(--border2); }
+.submit-btn { width:100%; padding:15px; border-radius:12px; border:none; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; margin-top:4px; }
+.sbt { background:linear-gradient(135deg,#4f8eff,#6a5acd); color:#fff; box-shadow:0 4px 24px #4f8eff33; }
+.sbt:hover { transform:translateY(-2px); box-shadow:0 8px 36px #4f8eff44; }
+.sbs { background:linear-gradient(135deg,#2ecc8a,#1a9e6a); color:#fff; box-shadow:0 4px 24px #2ecc8a33; }
+.sbs:hover { transform:translateY(-2px); box-shadow:0 8px 36px #2ecc8a44; }
+.submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none !important; }
+.auth-error { background:#e0555511; border:1px solid #e0555533; border-radius:10px; padding:10px 14px; font-size:13px; color:var(--red); margin-bottom:14px; display:none; }
+.login-choice { display:flex; gap:6px; margin-bottom:18px; background:var(--bg3); border-radius:10px; padding:4px; }
+.lcb { flex:1; padding:9px; border-radius:7px; border:none; background:transparent; color:var(--muted); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.lcb.active { background:var(--card); color:var(--text); border:1px solid var(--border2); }
+.field-block { display:none; }
+.field-block.show { display:block; }
 
-.splash-logo {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 32px;
-}
-.splash-icon {
-  width: 72px; height: 72px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #4f8eff, #7b5ea7);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 60px #4f8eff44, 0 0 120px #7b5ea722;
-  animation: iconPulse 3s ease-in-out infinite;
-  flex-shrink: 0;
-}
-@keyframes iconPulse {
-  0%, 100% { box-shadow: 0 0 60px #4f8eff44, 0 0 120px #7b5ea722; }
-  50% { box-shadow: 0 0 100px #4f8eff66, 0 0 180px #7b5ea744; }
-}
+/* ── APP HEADER ── */
+.app-header { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:#05070988; backdrop-filter:blur(20px); border-bottom:1px solid var(--border); }
+.header-brand { display:flex; align-items:center; gap:12px; }
+.header-brand-icon { width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,#4f8eff,#7b5ea7); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 12px #4f8eff33; flex-shrink:0; }
+.header-brand-text { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; letter-spacing:-0.5px; }
+.header-brand-text span { color:var(--accent); }
+.header-brand-sub { font-size:10px; color:var(--muted); letter-spacing:0.5px; text-transform:uppercase; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.portal-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+.pb-teacher { background:#4f8eff22; color:var(--teacher); border:1px solid #4f8eff33; }
+.pb-student { background:#2ecc8a22; color:var(--student); border:1px solid #2ecc8a33; }
+.user-display { text-align:right; }
+.udn { font-size:13px; font-weight:600; }
+.udi { font-size:11px; color:var(--muted); }
+.sign-out-btn { padding:7px 16px; border-radius:8px; border:1px solid #e0555533; color:var(--red); background:#e0555511; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.sign-out-btn:hover { background:#e0555522; }
 
-.splash-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(48px, 8vw, 80px);
-  font-weight: 800;
-  letter-spacing: -3px;
-  line-height: 1;
-  overflow: hidden;
-}
-.splash-title .word {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(60px);
-  animation: wordReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.splash-title .word-saksham {
-  background: linear-gradient(135deg, #ffffff 40%, #8baeff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  animation-delay: 0.2s;
-}
-.splash-title .word-ai {
-  color: var(--accent);
-  -webkit-text-fill-color: var(--accent);
-  animation-delay: 0.45s;
-  margin-left: 16px;
-}
-@keyframes wordReveal {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.splash-tagline {
-  font-size: 16px;
-  color: var(--muted);
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  opacity: 0;
-  animation: fadeSlideUp 0.8s 0.9s ease forwards;
-  margin-bottom: 64px;
-  text-align: center;
-}
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.splash-btn {
-  position: relative;
-  padding: 18px 56px;
-  border-radius: 50px;
-  border: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  background: linear-gradient(135deg, #4f8eff, #7b5ea7);
-  color: #fff;
-  box-shadow: 0 8px 40px #4f8eff44;
-  opacity: 0;
-  animation: fadeSlideUp 0.8s 1.2s ease forwards;
-  transition: transform 0.2s, box-shadow 0.2s;
-  overflow: hidden;
-}
-.splash-btn::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-  opacity: 0; transition: opacity 0.2s;
-}
-.splash-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 60px #4f8eff66; }
-.splash-btn:hover::before { opacity: 1; }
-.splash-btn:active { transform: translateY(0); }
-
-.splash-line {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, #4f8eff, #7b5ea7, transparent);
-  animation: lineScan 3s linear infinite;
-  opacity: 0.4;
-}
-@keyframes lineScan {
-  0% { transform: scaleX(0) translateX(-100%); }
-  50% { transform: scaleX(1) translateX(0); }
-  100% { transform: scaleX(0) translateX(100%); }
-}
-
-/* ════════════════════════════════════════
-   AUTH SCREEN
-════════════════════════════════════════ */
-#auth-screen {
-  position: fixed; inset: 0; z-index: 500;
-  display: none; align-items: center; justify-content: center;
-  padding: 24px;
-}
-#auth-screen.visible { display: flex; }
-
-.auth-wrapper {
-  width: 100%; max-width: 520px;
-  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.auth-card {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 28px;
-  padding: 44px 40px;
-  box-shadow: 0 40px 120px #00000099;
-  position: relative; z-index: 1;
-}
-
-.auth-header {
-  text-align: center; margin-bottom: 36px;
-}
-.auth-brand {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin-bottom: 24px;
-}
-.auth-brand-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  background: linear-gradient(135deg, #4f8eff, #7b5ea7);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 24px #4f8eff44;
-}
-.auth-brand-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 24px; letter-spacing: -0.5px;
-}
-.auth-brand-name span { color: var(--accent); }
-
-/* Portal toggle */
-.portal-toggle {
-  display: flex; gap: 0;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 16px; padding: 6px;
-  margin-bottom: 0;
-}
-.portal-btn {
-  flex: 1; padding: 14px 20px;
-  border: none; border-radius: 12px;
-  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
-  cursor: pointer; transition: all 0.3s;
-  background: transparent; color: var(--muted);
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.portal-btn.active-teacher {
-  background: linear-gradient(135deg, #4f8eff22, #4f8eff11);
-  color: var(--teacher);
-  border: 1px solid #4f8eff33;
-  box-shadow: 0 4px 20px #4f8eff11;
-}
-.portal-btn.active-student {
-  background: linear-gradient(135deg, #2ecc8a22, #2ecc8a11);
-  color: var(--student);
-  border: 1px solid #2ecc8a33;
-  box-shadow: 0 4px 20px #2ecc8a11;
-}
-
-/* Auth forms */
-.auth-form-section { display: none; margin-top: 28px; }
-.auth-form-section.active { display: block; animation: fadeSlideUp 0.3s ease; }
-
-.form-label {
-  display: block; font-size: 11px; font-weight: 700;
-  color: var(--muted); text-transform: uppercase;
-  letter-spacing: 0.8px; margin-bottom: 8px;
-}
-.form-input {
-  width: 100%; padding: 14px 16px;
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 12px; color: var(--text);
-  font-family: 'DM Sans', sans-serif; font-size: 15px;
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  margin-bottom: 16px;
-}
-.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #4f8eff15; }
-.form-input.student-focus:focus { border-color: var(--green); box-shadow: 0 0 0 3px #2ecc8a15; }
-
-.form-tabs {
-  display: flex; gap: 6px; margin-bottom: 20px;
-  background: var(--bg3); border-radius: 10px; padding: 4px;
-}
-.form-tab {
-  flex: 1; padding: 9px; border-radius: 8px;
-  border: none; background: transparent; color: var(--muted);
-  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
-}
-.form-tab.active { background: var(--card); color: var(--text); border: 1px solid var(--border2); }
-
-.submit-btn {
-  width: 100%; padding: 15px;
-  border-radius: 12px; border: none;
-  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
-  margin-top: 4px;
-}
-.submit-btn-teacher {
-  background: linear-gradient(135deg, #4f8eff, #6a5acd);
-  color: #fff; box-shadow: 0 4px 24px #4f8eff33;
-}
-.submit-btn-teacher:hover { transform: translateY(-2px); box-shadow: 0 8px 36px #4f8eff44; }
-.submit-btn-student {
-  background: linear-gradient(135deg, #2ecc8a, #1a9e6a);
-  color: #fff; box-shadow: 0 4px 24px #2ecc8a33;
-}
-.submit-btn-student:hover { transform: translateY(-2px); box-shadow: 0 8px 36px #2ecc8a44; }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-.auth-error {
-  background: #e0555511; border: 1px solid #e0555533;
-  border-radius: 10px; padding: 10px 14px;
-  font-size: 13px; color: var(--red);
-  margin-bottom: 16px; display: none;
-}
-.auth-divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 6px 0; color: var(--dim); font-size: 11px;
-}
-.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* Login choice */
-.login-choice {
-  display: flex; gap: 6px; margin-bottom: 18px;
-  background: var(--bg3); border-radius: 10px; padding: 4px;
-}
-.login-choice-btn {
-  flex: 1; padding: 9px; border-radius: 7px;
-  border: none; background: transparent; color: var(--muted);
-  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
-}
-.login-choice-btn.active { background: var(--card); color: var(--text); border: 1px solid var(--border2); }
-
-/* ════════════════════════════════════════
-   APP SHELL
-════════════════════════════════════════ */
-#app-screen { display: none; min-height: 100vh; }
-#app-screen.visible { display: block; }
-
-/* Header */
-.app-header {
-  position: sticky; top: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 40px;
-  background: #05070988; backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-}
-.header-brand {
-  display: flex; align-items: center; gap: 12px;
-}
-.header-brand-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: linear-gradient(135deg, #4f8eff, #7b5ea7);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 12px #4f8eff33; flex-shrink: 0;
-}
-.header-brand-text {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 18px; letter-spacing: -0.5px;
-}
-.header-brand-text span { color: var(--accent); }
-.header-brand-sub { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
-
-.header-right { display: flex; align-items: center; gap: 12px; }
-.portal-badge {
-  font-size: 11px; font-weight: 700;
-  padding: 4px 12px; border-radius: 20px;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.portal-badge-teacher { background: #4f8eff22; color: var(--teacher); border: 1px solid #4f8eff33; }
-.portal-badge-student { background: #2ecc8a22; color: var(--student); border: 1px solid #2ecc8a33; }
-.user-display { text-align: right; }
-.user-display-name { font-size: 13px; font-weight: 600; }
-.user-display-id { font-size: 11px; color: var(--muted); }
-.sign-out-btn {
-  padding: 7px 16px; border-radius: 8px;
-  border: 1px solid #e0555533; color: var(--red);
-  background: #e0555511; font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-}
-.sign-out-btn:hover { background: #e0555522; }
-
-/* Main */
-.app-main {
-  max-width: 1120px; margin: 0 auto;
-  padding: 60px 24px 100px;
-  position: relative; z-index: 1;
-}
+/* ── APP MAIN ── */
+.app-main { max-width:1120px; margin:0 auto; padding:60px 24px 100px; position:relative; z-index:1; }
 
 /* Dashboard */
-.dashboard-hero { text-align: center; margin-bottom: 64px; animation: fadeSlideUp 0.6s ease both; }
-.dashboard-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 600;
-  padding: 5px 14px; border-radius: 20px;
-  margin-bottom: 20px; letter-spacing: 0.8px; text-transform: uppercase;
-}
-.tag-teacher { color: var(--teacher); background: #4f8eff11; border: 1px solid #4f8eff33; }
-.tag-student { color: var(--student); background: #2ecc8a11; border: 1px solid #2ecc8a33; }
-.dashboard-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(36px, 5vw, 58px);
-  font-weight: 800; letter-spacing: -2px; line-height: 1.05;
-  margin-bottom: 18px;
-  background: linear-gradient(135deg, #fff 30%, #8baeff 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.dashboard-sub {
-  font-size: 17px; color: var(--muted);
-  max-width: 480px; margin: 0 auto; line-height: 1.7; font-weight: 300;
-}
+.dashboard-hero { text-align:center; margin-bottom:64px; animation:fadeUp 0.6s ease both; }
+.dash-tag { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:5px 14px; border-radius:20px; margin-bottom:20px; letter-spacing:0.8px; text-transform:uppercase; }
+.tag-t { color:var(--teacher); background:#4f8eff11; border:1px solid #4f8eff33; }
+.tag-s { color:var(--student); background:#2ecc8a11; border:1px solid #2ecc8a33; }
+.dash-title { font-family:'Syne',sans-serif; font-size:clamp(36px,5vw,58px); font-weight:800; letter-spacing:-2px; line-height:1.05; margin-bottom:18px; background:linear-gradient(135deg,#fff 30%,#8baeff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.dash-sub { font-size:17px; color:var(--muted); max-width:480px; margin:0 auto; line-height:1.7; font-weight:300; }
+.feature-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; animation:fadeUp 0.6s 0.1s ease both; }
+@media (max-width:700px) { .feature-grid { grid-template-columns:1fr; } }
+.fcard { background:var(--card); border:1px solid var(--border2); border-radius:24px; padding:44px 40px; cursor:pointer; transition:all 0.35s cubic-bezier(0.25,0.46,0.45,0.94); position:relative; overflow:hidden; display:flex; flex-direction:column; gap:20px; min-height:280px; }
+.fcard::after { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.35s; border-radius:24px; }
+.fc-t::after { background:radial-gradient(ellipse at 20% 60%,#4f8eff0c,transparent 60%); }
+.fc-s1::after { background:radial-gradient(ellipse at 20% 60%,#2ecc8a0c,transparent 60%); }
+.fc-s2::after { background:radial-gradient(ellipse at 20% 60%,#f0a5000c,transparent 60%); }
+.fcard:hover { transform:translateY(-6px); box-shadow:0 24px 80px #00000066; }
+.fc-t:hover { border-color:#4f8eff44; }
+.fc-s1:hover { border-color:#2ecc8a44; }
+.fc-s2:hover { border-color:#f0a50044; }
+.fcard:hover::after { opacity:1; }
+.card-badge { position:absolute; top:24px; right:24px; font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+.cb-t { background:#4f8eff22; color:var(--teacher); border:1px solid #4f8eff33; }
+.cb-s1 { background:#2ecc8a22; color:var(--student); border:1px solid #2ecc8a33; }
+.cb-s2 { background:#f0a50022; color:var(--amber); border:1px solid #f0a50033; }
+.card-icon { width:72px; height:72px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:32px; flex-shrink:0; }
+.ci-t { background:linear-gradient(135deg,#4f8eff22,#7b5ea722); border:1px solid #4f8eff33; }
+.ci-s1 { background:linear-gradient(135deg,#2ecc8a22,#4f8eff22); border:1px solid #2ecc8a33; }
+.ci-s2 { background:linear-gradient(135deg,#f0a50022,#2ecc8a22); border:1px solid #f0a50033; }
+.card-content { flex:1; }
+.card-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-bottom:10px; letter-spacing:-0.5px; }
+.card-desc { font-size:14px; color:var(--muted); line-height:1.65; }
+.card-arrow { align-self:flex-end; width:44px; height:44px; border-radius:12px; border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--muted); transition:all 0.3s; }
+.fc-t:hover .card-arrow { background:var(--teacher); border-color:var(--teacher); color:#fff; }
+.fc-s1:hover .card-arrow { background:var(--student); border-color:var(--student); color:#fff; }
+.fc-s2:hover .card-arrow { background:var(--amber); border-color:var(--amber); color:#fff; }
 
-/* Feature Cards */
-.feature-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  animation: fadeSlideUp 0.6s 0.1s ease both;
-}
-@media (max-width: 700px) { .feature-grid { grid-template-columns: 1fr; } }
-
-.feature-card {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 24px;
-  padding: 44px 40px;
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column; gap: 20px;
-  min-height: 280px;
-}
-.feature-card::after {
-  content: '';
-  position: absolute; inset: 0; opacity: 0;
-  transition: opacity 0.35s;
-  border-radius: 24px;
-}
-.feature-card-teacher::after { background: radial-gradient(ellipse at 20% 60%, #4f8eff0c, transparent 60%); }
-.feature-card-student-1::after { background: radial-gradient(ellipse at 20% 60%, #2ecc8a0c, transparent 60%); }
-.feature-card-student-2::after { background: radial-gradient(ellipse at 20% 60%, #f0a5000c, transparent 60%); }
-.feature-card:hover { transform: translateY(-6px); box-shadow: 0 24px 80px #00000066; }
-.feature-card-teacher:hover { border-color: #4f8eff44; }
-.feature-card-student-1:hover { border-color: #2ecc8a44; }
-.feature-card-student-2:hover { border-color: #f0a50044; }
-.feature-card:hover::after { opacity: 1; }
-
-.card-badge {
-  position: absolute; top: 24px; right: 24px;
-  font-size: 10px; font-weight: 700;
-  padding: 4px 10px; border-radius: 20px;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.badge-teacher { background: #4f8eff22; color: var(--teacher); border: 1px solid #4f8eff33; }
-.badge-student-1 { background: #2ecc8a22; color: var(--student); border: 1px solid #2ecc8a33; }
-.badge-student-2 { background: #f0a50022; color: var(--amber); border: 1px solid #f0a50033; }
-
-.card-icon {
-  width: 72px; height: 72px; border-radius: 20px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; flex-shrink: 0;
-}
-.icon-teacher { background: linear-gradient(135deg, #4f8eff22, #7b5ea722); border: 1px solid #4f8eff33; }
-.icon-student-1 { background: linear-gradient(135deg, #2ecc8a22, #4f8eff22); border: 1px solid #2ecc8a33; }
-.icon-student-2 { background: linear-gradient(135deg, #f0a50022, #2ecc8a22); border: 1px solid #f0a50033; }
-
-.card-content { flex: 1; }
-.card-title {
-  font-family: 'Syne', sans-serif; font-size: 24px;
-  font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;
-}
-.card-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
-
-.card-arrow {
-  align-self: flex-end; width: 44px; height: 44px;
-  border-radius: 12px; border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; color: var(--muted); transition: all 0.3s;
-}
-.feature-card-teacher:hover .card-arrow { background: var(--teacher); border-color: var(--teacher); color: #fff; }
-.feature-card-student-1:hover .card-arrow { background: var(--student); border-color: var(--student); color: #fff; }
-.feature-card-student-2:hover .card-arrow { background: var(--amber); border-color: var(--amber); color: #fff; }
-
-/* Feature Screen */
-.feature-screen { display: none; animation: fadeSlideUp 0.4s ease both; }
-.feature-screen.active { display: block; }
-
-.back-nav {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 18px; border-radius: 10px;
-  border: 1px solid var(--border2); background: var(--card);
-  font-size: 13px; font-weight: 600; color: var(--muted);
-  cursor: pointer; transition: all 0.2s; margin-bottom: 36px;
-}
-.back-nav:hover { color: var(--text); border-color: var(--accent); }
+/* Feature screens */
+.fscreen { display:none; animation:fadeUp 0.4s ease both; }
+.fscreen.active { display:block; }
+.back-nav { display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:10px; border:1px solid var(--border2); background:var(--card); font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.2s; margin-bottom:36px; }
+.back-nav:hover { color:var(--text); border-color:var(--accent); }
 
 /* Steps */
-.steps-bar { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 44px; }
-.step-item { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; color: var(--dim); transition: all 0.3s; }
-.step-item.active { color: var(--text); background: var(--card); border: 1px solid var(--border2); }
-.step-item.done { color: var(--green); }
-.step-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); font-size: 11px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; flex-shrink: 0; }
-.step-item.active .step-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
-.step-item.done .step-dot { background: var(--green); border-color: var(--green); color: #fff; }
-.step-connector { width: 48px; height: 1px; background: var(--border2); }
+.steps-bar { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:44px; }
+.step-item { display:flex; align-items:center; gap:8px; padding:10px 20px; border-radius:10px; font-size:13px; font-weight:500; color:var(--dim); transition:all 0.3s; }
+.step-item.active { color:var(--text); background:var(--card); border:1px solid var(--border2); }
+.step-item.done { color:var(--green); }
+.step-dot { width:24px; height:24px; border-radius:50%; background:var(--bg3); border:1px solid var(--border2); font-size:11px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; flex-shrink:0; }
+.step-item.active .step-dot { background:var(--accent); border-color:var(--accent); color:#fff; }
+.step-item.done .step-dot { background:var(--green); border-color:var(--green); color:#fff; }
+.step-connector { width:48px; height:1px; background:var(--border2); }
+.panel-section { display:none; animation:fadeUp 0.35s ease both; }
+.panel-section.active { display:block; }
 
-/* Panel */
-.panel-section { display: none; animation: fadeSlideUp 0.35s ease both; }
-.panel-section.active { display: block; }
+/* Upload zone */
+.upload-zone { border:2px dashed var(--border2); border-radius:20px; padding:72px 40px; text-align:center; cursor:pointer; transition:all 0.3s; background:var(--card); position:relative; overflow:hidden; }
+.upload-zone:hover,.upload-zone.dragover { border-color:var(--accent); background:#4f8eff08; }
+.uz-icon { width:72px; height:72px; margin:0 auto 20px; background:linear-gradient(135deg,#4f8eff22,#7b5ea722); border-radius:18px; border:1px solid #4f8eff33; display:flex; align-items:center; justify-content:center; font-size:30px; }
+.upload-zone h3 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; margin-bottom:8px; }
+.upload-zone p { color:var(--muted); font-size:14px; margin-bottom:24px; }
+.format-pills { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.pill { font-size:11px; font-weight:600; padding:4px 12px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--muted); }
 
-/* Upload Zone */
-.upload-zone {
-  border: 2px dashed var(--border2); border-radius: 20px;
-  padding: 72px 40px; text-align: center;
-  cursor: pointer; transition: all 0.3s;
-  background: var(--card); position: relative; overflow: hidden;
-}
-.upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: #4f8eff08; }
-.upload-zone-icon { width: 72px; height: 72px; margin: 0 auto 20px; background: linear-gradient(135deg, #4f8eff22, #7b5ea722); border-radius: 18px; border: 1px solid #4f8eff33; display: flex; align-items: center; justify-content: center; font-size: 30px; }
-.upload-zone h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.upload-zone p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-.format-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.pill { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 8px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
-
-/* Two column layout */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-
-/* Cards */
-.section-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
-.section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* Layout */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:768px) { .two-col { grid-template-columns:1fr; } }
+.scard { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px; margin-bottom:20px; }
+.scard:last-child { margin-bottom:0; }
+.stitle { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.stitle::after { content:''; flex:1; height:1px; background:var(--border); }
 
 /* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-@media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-.stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; padding: 18px; text-align: center; }
-.stat-number { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; background: linear-gradient(135deg, #fff, #8baeff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+@media (max-width:700px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
+.stat-box { background:var(--bg3); border:1px solid var(--border); border-radius:14px; padding:18px; text-align:center; }
+.stat-num { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; line-height:1; margin-bottom:4px; background:linear-gradient(135deg,#fff,#8baeff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
 
 /* Teacher list */
-.teacher-list { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
-.teacher-list::-webkit-scrollbar { width: 4px; }
-.teacher-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-.teacher-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; }
-.teacher-item:hover { background: var(--bg3); border-color: var(--border); }
-.teacher-item.absent-full { background: #e0555511; border-color: #e0555533; }
-.teacher-item.absent-first { background: #f0a50011; border-color: #f0a50033; }
-.teacher-item.absent-second { background: #7b5ea711; border-color: #7b5ea733; }
-.t-avatar { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(135deg, #4f8eff, #7b5ea7); display: flex; align-items: center; justify-content: center; font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; flex-shrink: 0; }
-.t-info { flex: 1; min-width: 0; }
-.t-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.t-subject { font-size: 12px; color: var(--muted); }
-.t-workload { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+.teacher-list { display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; }
+.teacher-list::-webkit-scrollbar { width:4px; }
+.teacher-list::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.teacher-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; border:1px solid transparent; cursor:pointer; transition:all 0.2s; }
+.teacher-item:hover { background:var(--bg3); border-color:var(--border); }
+.teacher-item.absent-full { background:#e0555511; border-color:#e0555533; }
+.teacher-item.absent-first { background:#f0a50011; border-color:#f0a50033; }
+.teacher-item.absent-second { background:#7b5ea711; border-color:#7b5ea733; }
+.t-av { width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,#4f8eff,#7b5ea7); display:flex; align-items:center; justify-content:center; font-size:14px; font-family:'Syne',sans-serif; font-weight:700; color:#fff; flex-shrink:0; }
+.t-info { flex:1; min-width:0; }
+.t-name { font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.t-sub { font-size:12px; color:var(--muted); }
+.t-wl { font-size:11px; font-weight:600; padding:3px 9px; border-radius:6px; background:var(--bg); border:1px solid var(--border); color:var(--muted); }
 
-/* Leave Popup */
-.leave-popup { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; background: #00000088; backdrop-filter: blur(8px); animation: fadeIn 0.15s ease; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.leave-popup-card { background: var(--card); border: 1px solid var(--border2); border-radius: 24px; padding: 32px; width: 360px; box-shadow: 0 32px 80px #00000099; animation: scaleIn 0.2s cubic-bezier(0.34,1.56,0.64,1); }
-.leave-popup-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.leave-popup-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-.leave-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-.leave-option { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; border: 1px solid var(--border2); cursor: pointer; transition: all 0.2s; background: var(--bg3); }
-.leave-option:hover { border-color: var(--accent); background: #4f8eff0a; }
-.leave-option-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.icon-full { background: #e0555522; } .icon-first { background: #f0a50022; } .icon-second { background: #7b5ea722; }
-.leave-option-text p { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
-.leave-option-text small { font-size: 12px; color: var(--muted); }
-.leave-cancel { width: 100%; padding: 11px; background: transparent; border: 1px solid var(--border2); border-radius: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-.leave-cancel:hover { background: var(--bg3); color: var(--text); }
-.leave-tag { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-.tag-full { background: #e0555522; color: var(--red); }
-.tag-first { background: #f0a50022; color: var(--amber); }
-.tag-second { background: #7b5ea722; color: #b48edb; }
+/* Leave popup */
+.leave-popup { position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:#00000088; backdrop-filter:blur(8px); animation:fadeIn 0.15s ease; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+.lp-card { background:var(--card); border:1px solid var(--border2); border-radius:24px; padding:32px; width:360px; box-shadow:0 32px 80px #00000099; animation:scaleIn 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.lp-name { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:4px; }
+.lp-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
+.leave-options { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+.leave-option { display:flex; align-items:center; gap:14px; padding:16px; border-radius:14px; border:1px solid var(--border2); cursor:pointer; transition:all 0.2s; background:var(--bg3); }
+.leave-option:hover { border-color:var(--accent); background:#4f8eff0a; }
+.lo-icon { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.iof { background:#e0555522; } .io1st { background:#f0a50022; } .io2nd { background:#7b5ea722; }
+.lo-text p { font-size:14px; font-weight:500; margin-bottom:3px; }
+.lo-text small { font-size:12px; color:var(--muted); }
+.leave-cancel { width:100%; padding:11px; background:transparent; border:1px solid var(--border2); border-radius:11px; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px; cursor:pointer; transition:all 0.2s; }
+.leave-cancel:hover { background:var(--bg3); color:var(--text); }
+.leave-tag { font-size:10px; font-weight:600; padding:3px 9px; border-radius:5px; text-transform:uppercase; letter-spacing:0.5px; }
+.ltf { background:#e0555522; color:var(--red); }
+.lt1 { background:#f0a50022; color:var(--amber); }
+.lt2 { background:#7b5ea722; color:#b48edb; }
 
-/* Form elements */
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-.form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 11px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; }
-.form-group textarea { resize: vertical; min-height: 120px; appearance: auto; }
-.form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-.select-wrap { position: relative; }
-.select-wrap::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+/* Forms */
+.fg { margin-bottom:18px; }
+.fg label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; }
+.fg select, .fg input, .fg textarea { width:100%; padding:12px 15px; background:var(--bg3); border:1px solid var(--border2); border-radius:11px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color 0.2s; appearance:none; -webkit-appearance:none; }
+.fg textarea { resize:vertical; min-height:120px; appearance:auto; }
+.fg select:focus, .fg input:focus, .fg textarea:focus { border-color:var(--accent); }
+.sw { position:relative; }
+.sw::after { content:'▾'; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px 28px; border-radius:12px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; border:none; outline:none; }
+.btn-p { background:var(--accent); color:#fff; box-shadow:0 4px 20px #4f8eff33; }
+.btn-p:hover { background:#6aa0ff; transform:translateY(-2px); }
+.btn-g { background:var(--green); color:#fff; box-shadow:0 4px 20px #2ecc8a33; }
+.btn-g:hover { background:#3de0a0; transform:translateY(-2px); }
+.btn-a { background:linear-gradient(135deg,#f0a500,#e08000); color:#fff; box-shadow:0 4px 20px #f0a50033; }
+.btn-a:hover { transform:translateY(-2px); }
+.btn-gh { background:transparent; border:1px solid var(--border2); color:var(--muted); }
+.btn-gh:hover { background:var(--bg3); color:var(--text); }
+.btn-full { width:100%; }
+.btn:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
 
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: none; outline: none; }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px #4f8eff33; }
-.btn-primary:hover { background: #6aa0ff; transform: translateY(-2px); }
-.btn-green { background: var(--green); color: #fff; box-shadow: 0 4px 20px #2ecc8a33; }
-.btn-green:hover { background: #3de0a0; transform: translateY(-2px); }
-.btn-amber { background: var(--amber); color: #fff; box-shadow: 0 4px 20px #f0a50033; }
-.btn-amber:hover { background: #ffb733; transform: translateY(-2px); }
-.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--muted); }
-.btn-ghost:hover { background: var(--bg3); color: var(--text); }
-.btn-full { width: 100%; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+/* Q type */
+.qt-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.qt-opt { padding:16px 10px; border-radius:12px; border:2px solid var(--border2); cursor:pointer; transition:all 0.2s; background:var(--bg3); text-align:center; }
+.qt-opt:hover { border-color:var(--accent); background:#4f8eff0a; }
+.qt-opt.selected { border-color:var(--accent); background:#4f8eff15; }
+.qt-icon { font-size:24px; margin-bottom:8px; }
+.qt-name { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:3px; }
+.qt-desc { font-size:11px; color:var(--muted); }
 
-/* Question type options */
-.q-type-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.q-type-option { padding: 16px 10px; border-radius: 12px; border: 2px solid var(--border2); cursor: pointer; transition: all 0.2s; background: var(--bg3); text-align: center; }
-.q-type-option:hover { border-color: var(--accent); background: #4f8eff0a; }
-.q-type-option.selected { border-color: var(--accent); background: #4f8eff15; }
-.q-type-option .q-icon { font-size: 24px; margin-bottom: 8px; }
-.q-type-option .q-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.q-type-option .q-desc { font-size: 11px; color: var(--muted); }
-
-/* Marks grid */
-.marks-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-.mark-btn { padding: 9px 20px; border-radius: 9px; border: 1px solid var(--border2); background: var(--bg3); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-.mark-btn:hover { border-color: var(--accent); color: var(--text); }
-.mark-btn.selected { border-color: var(--accent); background: #4f8eff22; color: var(--accent); }
+/* Marks */
+.marks-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.mbtn { padding:9px 20px; border-radius:9px; border:1px solid var(--border2); background:var(--bg3); color:var(--muted); font-family:'Syne',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.mbtn:hover { border-color:var(--accent); color:var(--text); }
+.mbtn.selected { border-color:var(--accent); background:#4f8eff22; color:var(--accent); }
 
 /* Difficulty */
-.diff-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.diff-option { padding: 16px 10px; border-radius: 12px; border: 2px solid var(--border2); cursor: pointer; transition: all 0.2s; background: var(--bg3); text-align: center; }
-.diff-option:hover { transform: translateY(-2px); }
-.diff-option.sel-easy { border-color: var(--green); background: #2ecc8a15; }
-.diff-option.sel-medium { border-color: var(--amber); background: #f0a50015; }
-.diff-option.sel-hard { border-color: var(--red); background: #e0555515; }
-.diff-icon { font-size: 22px; margin-bottom: 6px; }
-.diff-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.diff-desc { font-size: 10px; color: var(--muted); }
-.diff-easy .diff-name { color: var(--green); }
-.diff-medium .diff-name { color: var(--amber); }
-.diff-hard .diff-name { color: var(--red); }
-
-/* Mix config */
-.mix-config { display: none; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 12px; }
-.mix-config.visible { display: block; }
-.mix-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 13px; }
-.mix-row:last-child { margin-bottom: 0; }
-.mix-row label { color: var(--muted); font-weight: 500; }
+.diff-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.dopt { padding:16px 10px; border-radius:12px; border:2px solid var(--border2); cursor:pointer; transition:all 0.2s; background:var(--bg3); text-align:center; }
+.dopt:hover { transform:translateY(-2px); }
+.dopt.sel-easy { border-color:var(--green); background:#2ecc8a15; }
+.dopt.sel-medium { border-color:var(--amber); background:#f0a50015; }
+.dopt.sel-hard { border-color:var(--red); background:#e0555515; }
+.d-icon { font-size:22px; margin-bottom:6px; }
+.d-name { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:3px; }
+.d-desc { font-size:10px; color:var(--muted); }
+.diff-easy .d-name { color:var(--green); }
+.diff-medium .d-name { color:var(--amber); }
+.diff-hard .d-name { color:var(--red); }
+.mix-cfg { display:none; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:12px; }
+.mix-cfg.visible { display:block; }
+.mix-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; font-size:13px; }
+.mix-row:last-child { margin-bottom:0; }
+.mix-row label { color:var(--muted); font-weight:500; }
 
 /* Absent summary */
-.absent-summary { background: #e0555511; border: 1px solid #e0555522; border-radius: 12px; padding: 14px 18px; font-size: 13px; color: var(--muted); margin-bottom: 20px; display: none; }
+.absent-sum { background:#e0555511; border:1px solid #e0555522; border-radius:12px; padding:14px 18px; font-size:13px; color:var(--muted); margin-bottom:20px; display:none; }
 
 /* Results */
-.result-list { display: flex; flex-direction: column; gap: 16px; }
-.result-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px 26px; display: flex; align-items: center; gap: 20px; animation: fadeSlideUp 0.4s ease both; position: relative; overflow: hidden; }
-.result-card:nth-child(1) { border-color: #f0a50033; }
-.result-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 0 2px 2px 0; background: var(--accent); }
-.result-card:nth-child(1)::before { background: var(--amber); }
-.result-card:nth-child(2)::before { background: var(--muted); }
-.result-card:nth-child(3)::before { background: #cd7f32; }
-.rank-badge { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; flex-shrink: 0; }
-.rank-1 { background: #f0a50022; color: var(--amber); border: 1px solid #f0a50044; }
-.rank-2 { background: #8891a422; color: var(--muted); border: 1px solid #8891a433; }
-.rank-3 { background: #cd7f3222; color: #cd7f32; border: 1px solid #cd7f3233; }
-.result-info { flex: 1; min-width: 0; }
-.result-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.result-subject { font-size: 13px; color: var(--muted); }
-.result-metrics { display: flex; gap: 18px; flex-shrink: 0; flex-wrap: wrap; }
-.metric { text-align: center; }
-.metric-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 2px; }
-.metric-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-.score-high { color: var(--green); } .score-mid { color: var(--amber); } .score-low { color: var(--red); }
-.subject-match { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px; }
-.match-yes { background: #2ecc8a22; color: var(--green); border: 1px solid #2ecc8a33; }
-.match-no { background: #f0a50011; color: var(--amber); border: 1px solid #f0a50022; }
+.result-list { display:flex; flex-direction:column; gap:16px; }
+.rcard { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:22px 26px; display:flex; align-items:center; gap:20px; animation:fadeUp 0.4s ease both; position:relative; overflow:hidden; }
+.rcard:nth-child(1) { border-color:#f0a50033; }
+.rcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:0 2px 2px 0; background:var(--accent); }
+.rcard:nth-child(1)::before { background:var(--amber); }
+.rcard:nth-child(2)::before { background:var(--muted); }
+.rcard:nth-child(3)::before { background:#cd7f32; }
+.rank-badge { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:18px; flex-shrink:0; }
+.r1 { background:#f0a50022; color:var(--amber); border:1px solid #f0a50044; }
+.r2 { background:#8891a422; color:var(--muted); border:1px solid #8891a433; }
+.r3 { background:#cd7f3222; color:#cd7f32; border:1px solid #cd7f3233; }
+.r-info { flex:1; min-width:0; }
+.r-name { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:4px; }
+.r-sub { font-size:13px; color:var(--muted); }
+.r-metrics { display:flex; gap:18px; flex-shrink:0; flex-wrap:wrap; }
+.metric { text-align:center; }
+.mval { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; line-height:1; margin-bottom:2px; }
+.mlabel { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; }
+.sh { color:var(--green); } .sm { color:var(--amber); } .sl { color:var(--red); }
+.sm-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px; margin-left:8px; }
+.match-yes { background:#2ecc8a22; color:var(--green); border:1px solid #2ecc8a33; }
+.match-no { background:#f0a50011; color:var(--amber); border:1px solid #f0a50022; }
 
 /* Paper output */
-.paper-output { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; display: none; animation: fadeSlideUp 0.4s ease both; }
-.paper-output.visible { display: block; }
-.paper-header { text-align: center; margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border2); }
-.paper-school { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-.paper-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 12px; }
-.paper-meta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-.paper-meta span { background: var(--bg3); padding: 5px 14px; border-radius: 8px; border: 1px solid var(--border); }
-.paper-section { margin-bottom: 30px; }
-.paper-section-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #4f8eff22; }
-.question-item { display: flex; gap: 12px; margin-bottom: 18px; font-size: 14px; line-height: 1.65; }
-.q-num { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); min-width: 30px; flex-shrink: 0; }
-.q-text { flex: 1; color: var(--text); }
-.q-marks { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--bg3); padding: 3px 9px; border-radius: 5px; border: 1px solid var(--border); white-space: nowrap; align-self: flex-start; margin-top: 2px; }
-.mcq-options { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
-.mcq-option { font-size: 13px; color: var(--muted); padding-left: 10px; }
-.paper-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+.paper-out { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:36px; display:none; animation:fadeUp 0.4s ease both; }
+.paper-out.visible { display:block; }
+.p-header { text-align:center; margin-bottom:28px; padding-bottom:22px; border-bottom:1px solid var(--border2); }
+.p-school { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.p-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-bottom:12px; }
+.p-meta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; font-size:13px; color:var(--muted); }
+.p-meta span { background:var(--bg3); padding:5px 14px; border-radius:8px; border:1px solid var(--border); }
+.p-section { margin-bottom:30px; }
+.ps-title { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--accent); margin-bottom:18px; padding-bottom:8px; border-bottom:1px solid #4f8eff22; }
+.q-item { display:flex; gap:12px; margin-bottom:18px; font-size:14px; line-height:1.65; }
+.q-num { font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); min-width:30px; flex-shrink:0; }
+.q-txt { flex:1; color:var(--text); }
+.q-marks { font-size:11px; font-weight:600; color:var(--muted); background:var(--bg3); padding:3px 9px; border-radius:5px; border:1px solid var(--border); white-space:nowrap; align-self:flex-start; margin-top:2px; }
+.mcq-opts { margin-top:8px; display:flex; flex-direction:column; gap:5px; }
+.mcq-opt { font-size:13px; color:var(--muted); padding-left:10px; }
+.p-actions { display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+
+/* Notes */
+.notes-out { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:36px; display:none; }
+.notes-out.visible { display:block; animation:fadeUp 0.4s ease both; }
+.notes-content { font-size:15px; line-height:1.9; color:var(--text); }
+.notes-content h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid #4f8eff22; }
+.notes-content h3 { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:var(--text); margin:20px 0 8px; }
+.notes-content p { margin-bottom:12px; color:var(--muted); }
+.notes-content ul, .notes-content ol { margin:12px 0 12px 24px; }
+.notes-content li { margin-bottom:6px; color:var(--muted); }
+.notes-content strong { color:var(--text); }
 
 /* Loading */
-.loading-state { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 60px; color: var(--muted); font-size: 14px; }
-.spinner { width: 40px; height: 40px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.loading-st { display:flex; flex-direction:column; align-items:center; gap:18px; padding:60px; color:var(--muted); font-size:14px; }
+.spinner { width:40px; height:40px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-/* Slot info */
-.slot-info-bar { background: var(--bg3); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; }
-.slot-tag { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 5px 12px; color: var(--muted); }
-.slot-tag span { color: var(--text); font-weight: 500; }
-
-/* File success */
-.file-success-bar { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: #2ecc8a11; border: 1px solid #2ecc8a33; border-radius: 14px; margin-top: 16px; }
-.file-success-bar .icon { font-size: 24px; }
-.file-success-bar p { font-size: 14px; font-weight: 500; }
-.file-success-bar small { font-size: 12px; color: var(--muted); }
-
-/* Divider */
-.divider { height: 1px; background: var(--border); margin: 24px 0; }
-.reset-link { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; transition: color 0.2s; }
-.reset-link:hover { color: var(--text); }
-
-/* Empty state */
-.empty-state { text-align: center; padding: 56px; color: var(--dim); }
-.empty-state .e-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.4; }
-
-/* Toast */
-.toast { position: fixed; bottom: 28px; right: 28px; background: var(--card); border: 1px solid var(--border2); border-radius: 14px; padding: 14px 22px; font-size: 13px; font-weight: 500; box-shadow: 0 12px 40px #00000077; z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); max-width: 340px; }
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: #2ecc8a44; }
-.toast.error { border-color: #e0555544; }
-
-/* Notes specific */
-.notes-placeholder { text-align: center; padding: 72px 32px; color: var(--dim); }
-.notes-placeholder .np-icon { font-size: 56px; margin-bottom: 20px; opacity: 0.3; }
-.notes-placeholder h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--muted); }
-.notes-output { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; display: none; }
-.notes-output.visible { display: block; animation: fadeSlideUp 0.4s ease both; }
-.notes-content { font-size: 15px; line-height: 1.9; color: var(--text); }
-.notes-content h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--accent); margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #4f8eff22; }
-.notes-content h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin: 20px 0 8px; }
-.notes-content p { margin-bottom: 12px; color: var(--muted); }
-.notes-content ul, .notes-content ol { margin: 12px 0 12px 24px; }
-.notes-content li { margin-bottom: 6px; color: var(--muted); }
-.notes-content strong { color: var(--text); }
-.notes-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+/* Misc */
+.slot-bar { background:var(--bg3); border-radius:12px; padding:14px 18px; margin-bottom:24px; display:flex; flex-wrap:wrap; gap:10px; font-size:13px; }
+.slot-tag { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:5px 12px; color:var(--muted); }
+.slot-tag span { color:var(--text); font-weight:500; }
+.fs-bar { display:flex; align-items:center; gap:14px; padding:16px 20px; background:#2ecc8a11; border:1px solid #2ecc8a33; border-radius:14px; margin-top:16px; }
+.fs-bar .icon { font-size:24px; }
+.fs-bar p { font-size:14px; font-weight:500; }
+.fs-bar small { font-size:12px; color:var(--muted); }
+.divider { height:1px; background:var(--border); margin:24px 0; }
+.reset-link { font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 0; transition:color 0.2s; }
+.reset-link:hover { color:var(--text); }
+.empty-st { text-align:center; padding:56px; color:var(--dim); }
+.empty-st .ei { font-size:44px; margin-bottom:14px; opacity:0.4; }
+.ph { text-align:center; padding:72px 32px; color:var(--dim); }
+.ph .pi { font-size:56px; margin-bottom:20px; opacity:0.3; }
+.ph h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:8px; color:var(--muted); }
+.upload-syllabus { border:2px dashed var(--border2); border-radius:12px; padding:16px; text-align:center; cursor:pointer; background:var(--bg3); transition:all 0.2s; }
+.upload-syllabus:hover { border-color:var(--accent); background:#4f8eff0a; }
+.toast { position:fixed; bottom:28px; right:28px; background:var(--card); border:1px solid var(--border2); border-radius:14px; padding:14px 22px; font-size:13px; font-weight:500; box-shadow:0 12px 40px #00000077; z-index:9999; transform:translateY(80px); opacity:0; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); max-width:340px; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-color:#2ecc8a44; }
+.toast.error { border-color:#e0555544; }
 </style>
 </head>
 <body>
-
 <div class="blob blob-a"></div>
 <div class="blob blob-b"></div>
 <div class="blob blob-c"></div>
 
-<!-- ════════════ SPLASH SCREEN ════════════ -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="splash-line"></div>
   <div class="splash-logo">
@@ -732,11 +376,11 @@ body::before {
       <span class="word word-ai">AI</span>
     </div>
   </div>
-  <p class="splash-tagline">Empowering Teachers & Students with Artificial Intelligence</p>
+  <p class="splash-tagline">Empowering Teachers &amp; Students with Artificial Intelligence</p>
   <button class="splash-btn" onclick="enterPlatform()">Get Started →</button>
 </div>
 
-<!-- ════════════ AUTH SCREEN ════════════ -->
+<!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-wrapper">
     <div class="auth-card">
@@ -751,86 +395,72 @@ body::before {
               <path d="M25 32V28" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
             </svg>
           </div>
-          <div>
-            <div class="auth-brand-name">Saksham <span>AI</span></div>
-          </div>
+          <div><div class="auth-brand-name">Saksham <span>AI</span></div></div>
         </div>
-
         <div class="portal-toggle">
-          <button class="portal-btn active-teacher" id="portal-teacher-btn" onclick="switchPortal('teacher')">
-            👨‍🏫 Teacher Portal
-          </button>
-          <button class="portal-btn" id="portal-student-btn" onclick="switchPortal('student')">
-            🎓 Student Portal
-          </button>
+          <button class="portal-btn active-teacher" id="pt-teacher" onclick="switchPortal('teacher')">👨‍🏫 Teacher Portal</button>
+          <button class="portal-btn" id="pt-student" onclick="switchPortal('student')">🎓 Student Portal</button>
         </div>
       </div>
 
       <!-- TEACHER AUTH -->
       <div class="auth-form-section active" id="auth-teacher">
         <div class="form-tabs">
-          <button class="form-tab active" onclick="switchAuthTab('t-login', this)">Sign In</button>
-          <button class="form-tab" onclick="switchAuthTab('t-register', this)">Register</button>
+          <button class="form-tab active" onclick="switchTab('t-login',this)">Sign In</button>
+          <button class="form-tab" onclick="switchTab('t-register',this)">Register</button>
         </div>
-
-        <!-- Teacher Login -->
         <div id="t-login" class="panel-section active">
-          <div id="t-login-error" class="auth-error"></div>
+          <div id="t-login-err" class="auth-error"></div>
           <div class="login-choice">
-            <button class="login-choice-btn active" id="tc-email-btn" onclick="switchTChoice('email')">📧 Email</button>
-            <button class="login-choice-btn" id="tc-id-btn" onclick="switchTChoice('schoolid')">🪪 School ID</button>
+            <button class="lcb active" id="tc-email" onclick="switchTChoice('email')">📧 Email</button>
+            <button class="lcb" id="tc-id" onclick="switchTChoice('id')">🪪 School ID</button>
           </div>
-          <div id="t-email-field">
-            <input class="form-input" type="email" id="t-login-email" placeholder="teacher@school.com" onkeydown="if(event.key==='Enter')doLogin('teacher')">
+          <div id="t-email-f" class="field-block show">
+            <input class="form-input" type="email" id="tl-email" placeholder="teacher@school.com" onkeydown="if(event.key==='Enter')doLogin('teacher')">
           </div>
-          <div id="t-id-field" style="display:none">
-            <input class="form-input" type="text" id="t-login-schoolid" placeholder="e.g. SCH-2024-XXXXX" onkeydown="if(event.key==='Enter')doLogin('teacher')">
+          <div id="t-id-f" class="field-block">
+            <input class="form-input" type="text" id="tl-sid" placeholder="e.g. SCH-2024-XXXXX" onkeydown="if(event.key==='Enter')doLogin('teacher')">
           </div>
-          <input class="form-input" type="password" id="t-login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin('teacher')">
-          <button class="submit-btn submit-btn-teacher" onclick="doLogin('teacher')" id="t-login-btn">Sign In →</button>
+          <input class="form-input" type="password" id="tl-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin('teacher')">
+          <button class="submit-btn sbt" onclick="doLogin('teacher')" id="tl-btn">Sign In →</button>
         </div>
-
-        <!-- Teacher Register -->
         <div id="t-register" class="panel-section">
-          <div id="t-reg-error" class="auth-error"></div>
-          <input class="form-input" type="text" id="t-reg-name" placeholder="Full Name">
-          <input class="form-input" type="email" id="t-reg-email" placeholder="Email Address">
-          <input class="form-input" type="text" id="t-reg-uid" placeholder="School ID (e.g. SCH-2024-XXXXX)">
-          <input class="form-input" type="password" id="t-reg-pass" placeholder="Password (min. 6 characters)">
-          <button class="submit-btn submit-btn-teacher" onclick="doRegister('teacher')" id="t-reg-btn">Create Account →</button>
+          <div id="t-reg-err" class="auth-error"></div>
+          <input class="form-input" type="text" id="tr-name" placeholder="Full Name">
+          <input class="form-input" type="email" id="tr-email" placeholder="Email Address">
+          <input class="form-input" type="text" id="tr-sid" placeholder="School ID (e.g. SCH-2024-XXXXX)">
+          <input class="form-input" type="password" id="tr-pass" placeholder="Password (minimum 6 characters)">
+          <button class="submit-btn sbt" onclick="doRegister('teacher')" id="tr-btn">Create Account →</button>
         </div>
       </div>
 
       <!-- STUDENT AUTH -->
       <div class="auth-form-section" id="auth-student">
         <div class="form-tabs">
-          <button class="form-tab active" onclick="switchAuthTab('s-login', this)">Sign In</button>
-          <button class="form-tab" onclick="switchAuthTab('s-register', this)">Register</button>
+          <button class="form-tab active" onclick="switchTab('s-login',this)">Sign In</button>
+          <button class="form-tab" onclick="switchTab('s-register',this)">Register</button>
         </div>
-
-        <!-- Student Login -->
         <div id="s-login" class="panel-section active">
-          <div id="s-login-error" class="auth-error"></div>
-          <input class="form-input student-focus" type="email" id="s-login-email" placeholder="student@email.com" onkeydown="if(event.key==='Enter')doLogin('student')">
-          <input class="form-input student-focus" type="password" id="s-login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin('student')">
-          <button class="submit-btn submit-btn-student" onclick="doLogin('student')" id="s-login-btn">Sign In →</button>
+          <div id="s-login-err" class="auth-error"></div>
+          <input class="form-input sf" type="email" id="sl-email" placeholder="student@email.com" onkeydown="if(event.key==='Enter')doLogin('student')">
+          <input class="form-input sf" type="password" id="sl-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin('student')">
+          <button class="submit-btn sbs" onclick="doLogin('student')" id="sl-btn">Sign In →</button>
         </div>
-
-        <!-- Student Register -->
         <div id="s-register" class="panel-section">
-          <div id="s-reg-error" class="auth-error"></div>
-          <input class="form-input student-focus" type="text" id="s-reg-name" placeholder="Full Name">
-          <input class="form-input student-focus" type="email" id="s-reg-email" placeholder="Email Address">
-          <input class="form-input student-focus" type="text" id="s-reg-class" placeholder="Class (e.g. Class 10 - A)">
-          <input class="form-input student-focus" type="password" id="s-reg-pass" placeholder="Password (min. 6 characters)">
-          <button class="submit-btn submit-btn-student" onclick="doRegister('student')" id="s-reg-btn">Create Account →</button>
+          <div id="s-reg-err" class="auth-error"></div>
+          <input class="form-input sf" type="text" id="sr-name" placeholder="Full Name">
+          <input class="form-input sf" type="email" id="sr-email" placeholder="Email Address">
+          <input class="form-input sf" type="text" id="sr-class" placeholder="Class (e.g. Class 10 — Section A)">
+          <input class="form-input sf" type="password" id="sr-pass" placeholder="Password (minimum 6 characters)">
+          <button class="submit-btn sbs" onclick="doRegister('student')" id="sr-btn">Create Account →</button>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- ════════════ APP SCREEN ════════════ -->
+<!-- APP -->
 <div id="app-screen">
   <header class="app-header">
     <div class="header-brand">
@@ -849,42 +479,39 @@ body::before {
       </div>
     </div>
     <div class="header-right">
-      <div class="portal-badge" id="header-portal-badge"></div>
+      <div class="portal-badge" id="hdr-badge"></div>
       <div class="user-display">
-        <div class="user-display-name" id="header-user-name">User</div>
-        <div class="user-display-id" id="header-user-id"></div>
+        <div class="udn" id="hdr-name">User</div>
+        <div class="udi" id="hdr-id"></div>
       </div>
       <button class="sign-out-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </header>
 
   <div class="app-main">
-
-    <!-- DASHBOARD -->
-    <div id="dashboard-view">
+    <div id="view-dashboard">
       <div class="dashboard-hero">
-        <div class="dashboard-tag" id="dash-tag"></div>
-        <h1 class="dashboard-title" id="dash-title"></h1>
-        <p class="dashboard-sub" id="dash-sub"></p>
+        <div class="dash-tag" id="dash-tag"></div>
+        <h1 class="dash-title" id="dash-title"></h1>
+        <p class="dash-sub" id="dash-sub"></p>
       </div>
       <div class="feature-grid" id="feature-grid"></div>
     </div>
 
     <!-- TEACHER: SUBSTITUTION -->
-    <div class="feature-screen" id="screen-substitution">
+    <div class="fscreen" id="screen-substitution">
       <button class="back-nav" onclick="goToDashboard()">← Back to Dashboard</button>
       <div class="steps-bar">
-        <div class="step-item active" id="step-1"><div class="step-dot">1</div>Upload Timetable</div>
+        <div class="step-item active" id="step-1"><div class="step-dot">1</div> Upload Timetable</div>
         <div class="step-connector"></div>
-        <div class="step-item" id="step-2"><div class="step-dot">2</div>Mark Absent</div>
+        <div class="step-item" id="step-2"><div class="step-dot">2</div> Mark Absent</div>
         <div class="step-connector"></div>
-        <div class="step-item" id="step-3"><div class="step-dot">3</div>View Results</div>
+        <div class="step-item" id="step-3"><div class="step-dot">3</div> View Results</div>
       </div>
-
       <div class="panel-section active" id="panel-1">
         <div class="upload-zone" id="upload-area" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none">
-          <div class="upload-zone-icon">📊</div>
+          <div class="uz-icon">📊</div>
           <h3>Drop your timetable here</h3>
           <p>or click to browse files from your computer</p>
           <div class="format-pills"><span class="pill">CSV</span><span class="pill">XLSX</span><span class="pill">XLS</span></div>
@@ -892,163 +519,145 @@ body::before {
         <div id="file-success-area"></div>
         <div style="margin-top:24px;text-align:center">
           <p style="font-size:13px;color:var(--dim);margin-bottom:14px">— or load demo data —</p>
-          <button class="btn btn-ghost" onclick="loadDemoData()">Load Demo School Data</button>
+          <button class="btn btn-gh" onclick="loadDemoData()">Load Demo School Data</button>
         </div>
       </div>
-
       <div class="panel-section" id="panel-2">
         <div class="stats-grid">
-          <div class="stat-box"><div class="stat-number" id="stat-teachers">0</div><div class="stat-label">Teachers</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-classes">0</div><div class="stat-label">Classes</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-periods">8</div><div class="stat-label">Periods</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-slots">0</div><div class="stat-label">Total Slots</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-teachers">0</div><div class="stat-label">Teachers</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-classes">0</div><div class="stat-label">Classes</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-periods">8</div><div class="stat-label">Periods</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-slots">0</div><div class="stat-label">Total Slots</div></div>
         </div>
         <div class="two-col">
-          <div class="section-card">
-            <div class="section-title">Select Absent Teachers</div>
+          <div class="scard">
+            <div class="stitle">Select Absent Teachers</div>
             <input type="text" placeholder="Search by name or subject..." style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:14px" oninput="filterTeachers(this.value)" id="teacher-search">
             <div class="teacher-list" id="teacher-list"></div>
             <div class="divider"></div>
-            <div id="absent-summary" class="absent-summary"></div>
+            <div id="absent-sum" class="absent-sum"></div>
           </div>
-          <div class="section-card">
-            <div class="section-title">Slot Details</div>
-            <div class="form-group"><label>Day</label><div class="select-wrap"><select id="sel-day"><option value="">Select day</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div></div>
-            <div class="form-group"><label>Period</label><div class="select-wrap"><select id="sel-period"><option value="">Select period</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div></div>
-            <div class="form-group"><label>Class</label><div class="select-wrap"><select id="sel-class"><option value="">Select class</option></select></div></div>
-            <div class="form-group"><label>Subject</label><div class="select-wrap"><select id="sel-subject"><option value="">Select subject</option></select></div></div>
+          <div class="scard">
+            <div class="stitle">Slot Details</div>
+            <div class="fg"><label>Day</label><div class="sw"><select id="sel-day"><option value="">Select day</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div></div>
+            <div class="fg"><label>Period</label><div class="sw"><select id="sel-period"><option value="">Select period</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div></div>
+            <div class="fg"><label>Class</label><div class="sw"><select id="sel-class"><option value="">Select class</option></select></div></div>
+            <div class="fg"><label>Subject</label><div class="sw"><select id="sel-subject"><option value="">Select subject</option></select></div></div>
             <div class="divider"></div>
-            <button class="btn btn-primary btn-full" id="find-btn" onclick="findSubstitutes()" disabled>✦ Find Best Substitutes</button>
-            <div style="margin-top:12px;text-align:center"><button class="reset-link" onclick="resetSubstitution()">↺ Start over</button></div>
+            <button class="btn btn-p btn-full" id="find-btn" onclick="findSubstitutes()" disabled>✦ Find Best Substitutes</button>
+            <div style="margin-top:12px;text-align:center"><button class="reset-link" onclick="resetSub()">↺ Start over</button></div>
           </div>
         </div>
       </div>
-
       <div class="panel-section" id="panel-3">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
-          <div><h2 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.5px">Top Substitutes</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Ranked by AI score — workload, performance & subject match</p></div>
-          <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+          <div><h2 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.5px">Top Substitutes</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Ranked by AI score — workload, performance &amp; subject match</p></div>
+          <button class="btn btn-gh" onclick="goToStep(2)">← Back</button>
         </div>
-        <div id="slot-info-bar" class="slot-info-bar"></div>
-        <div id="results-container"><div class="loading-state"><div class="spinner"></div><span>Analysing and ranking teachers...</span></div></div>
+        <div id="slot-bar" class="slot-bar"></div>
+        <div id="results-container"><div class="loading-st"><div class="spinner"></div><span>Analysing and ranking teachers...</span></div></div>
         <div class="divider"></div>
-        <div style="text-align:center"><button class="btn btn-ghost" onclick="resetSubstitution()">↺ New Allocation</button></div>
+        <div style="text-align:center"><button class="btn btn-gh" onclick="resetSub()">↺ New Allocation</button></div>
       </div>
     </div>
 
     <!-- TEACHER: TEST PAPER -->
-    <div class="feature-screen" id="screen-testpaper">
+    <div class="fscreen" id="screen-testpaper">
       <button class="back-nav" onclick="goToDashboard()">← Back to Dashboard</button>
       <div class="two-col">
         <div>
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Syllabus & Topic</div>
-            <div class="form-group"><label>Subject</label><div class="select-wrap"><select id="tp-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
-            <div class="form-group"><label>Class / Grade</label><div class="select-wrap"><select id="tp-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
-            <div class="form-group"><label>Topics / Syllabus</label><textarea id="tp-syllabus" placeholder="e.g. Chapter 3: Quadratic Equations, Chapter 4: Arithmetic Progressions..."></textarea></div>
-            <div class="form-group">
+          <div class="scard">
+            <div class="stitle">Syllabus &amp; Topic</div>
+            <div class="fg"><label>Subject</label><div class="sw"><select id="tp-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
+            <div class="fg"><label>Class / Grade</label><div class="sw"><select id="tp-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
+            <div class="fg"><label>Topics / Syllabus</label><textarea id="tp-syllabus" placeholder="e.g. Chapter 3: Quadratic Equations, Chapter 4: Arithmetic Progressions..."></textarea></div>
+            <div class="fg">
               <label>Upload Syllabus File (Optional)</label>
-              <div onclick="document.getElementById('tp-syllabus-file').click()" style="border:2px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:var(--bg3);transition:all 0.2s;" id="tp-syllabus-upload">
-                <input type="file" id="tp-syllabus-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onTpSyllabusFile(this)">
+              <div class="upload-syllabus" id="tp-syl-upload" onclick="document.getElementById('tp-syl-file').click()">
+                <input type="file" id="tp-syl-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onTpFile(this)">
                 <div style="font-size:20px;margin-bottom:5px">📎</div>
-                <div style="font-size:13px;color:var(--muted)" id="tp-syllabus-label">Click to upload PDF or Image</div>
+                <div style="font-size:13px;color:var(--muted)" id="tp-syl-label">Click to upload PDF or Image</div>
                 <div style="font-size:11px;color:var(--dim);margin-top:3px">PDF, JPG, PNG supported</div>
               </div>
             </div>
           </div>
-
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Total Marks</div>
+          <div class="scard">
+            <div class="stitle">Total Marks</div>
             <div class="marks-row">
-              <button class="mark-btn" onclick="selectMarks(10,this)">10</button>
-              <button class="mark-btn" onclick="selectMarks(20,this)">20</button>
-              <button class="mark-btn" onclick="selectMarks(25,this)">25</button>
-              <button class="mark-btn" onclick="selectMarks(50,this)">50</button>
-              <button class="mark-btn" onclick="selectMarks(100,this)">100</button>
+              <button class="mbtn" onclick="selMarks(10,this)">10</button>
+              <button class="mbtn" onclick="selMarks(20,this)">20</button>
+              <button class="mbtn" onclick="selMarks(25,this)">25</button>
+              <button class="mbtn" onclick="selMarks(50,this)">50</button>
+              <button class="mbtn" onclick="selMarks(100,this)">100</button>
             </div>
             <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
               <span style="font-size:13px;color:var(--muted)">Custom:</span>
-              <input type="number" style="width:110px;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;outline:none" id="tp-custom-marks" placeholder="e.g. 30" oninput="selectCustomMarks(this.value)">
+              <input type="number" style="width:110px;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;outline:none" id="tp-marks-custom" placeholder="e.g. 30" oninput="selCustomMarks(this.value)">
             </div>
           </div>
-
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Number of Questions</div>
+          <div class="scard">
+            <div class="stitle">Number of Questions</div>
             <div class="marks-row">
-              <button class="mark-btn q-btn" onclick="selectQuestions(5,this)">5</button>
-              <button class="mark-btn q-btn" onclick="selectQuestions(10,this)">10</button>
-              <button class="mark-btn q-btn" onclick="selectQuestions(15,this)">15</button>
-              <button class="mark-btn q-btn" onclick="selectQuestions(20,this)">20</button>
-              <button class="mark-btn q-btn" onclick="selectQuestions(25,this)">25</button>
+              <button class="mbtn qbtn" onclick="selQuestions(5,this)">5</button>
+              <button class="mbtn qbtn" onclick="selQuestions(10,this)">10</button>
+              <button class="mbtn qbtn" onclick="selQuestions(15,this)">15</button>
+              <button class="mbtn qbtn" onclick="selQuestions(20,this)">20</button>
+              <button class="mbtn qbtn" onclick="selQuestions(25,this)">25</button>
             </div>
             <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
               <span style="font-size:13px;color:var(--muted)">Custom:</span>
-              <input type="number" style="width:110px;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;outline:none" id="tp-custom-questions" placeholder="e.g. 12" oninput="selectCustomQuestions(this.value)">
+              <input type="number" style="width:110px;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;outline:none" id="tp-q-custom" placeholder="e.g. 12" oninput="selCustomQuestions(this.value)">
             </div>
           </div>
-
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Question Type</div>
-            <div class="q-type-grid">
-              <div class="q-type-option" onclick="selectType('subjective',this)"><div class="q-icon">✍️</div><div class="q-name">Subjective</div><div class="q-desc">Long & short answer</div></div>
-              <div class="q-type-option" onclick="selectType('objective',this)"><div class="q-icon">☑️</div><div class="q-name">Objective</div><div class="q-desc">MCQ, True/False</div></div>
-              <div class="q-type-option" onclick="selectType('mix',this)"><div class="q-icon">🔀</div><div class="q-name">Mix</div><div class="q-desc">Both types</div></div>
+          <div class="scard">
+            <div class="stitle">Question Type</div>
+            <div class="qt-grid">
+              <div class="qt-opt" onclick="selType('subjective',this,'tp')"><div class="qt-icon">✍️</div><div class="qt-name">Subjective</div><div class="qt-desc">Long &amp; short answer</div></div>
+              <div class="qt-opt" onclick="selType('objective',this,'tp')"><div class="qt-icon">☑️</div><div class="qt-name">Objective</div><div class="qt-desc">MCQ, True/False</div></div>
+              <div class="qt-opt" onclick="selType('mix',this,'tp')"><div class="qt-icon">🔀</div><div class="qt-name">Mix</div><div class="qt-desc">Both types</div></div>
             </div>
-            <div class="mix-config" id="mix-config">
+            <div class="mix-cfg" id="tp-mix-cfg">
               <p style="font-size:11px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700">Customise Mix</p>
-              <div class="mix-row"><label>Objective %</label><input type="number" id="mix-obj" value="50" style="width:80px;padding:7px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center"></div>
-              <div class="mix-row"><label>Subjective %</label><input type="number" id="mix-sub" value="50" style="width:80px;padding:7px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center"></div>
+              <div class="mix-row"><label>Objective %</label><input type="number" id="tp-mix-obj" value="50" style="width:80px;padding:7px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center"></div>
+              <div class="mix-row"><label>Subjective %</label><input type="number" id="tp-mix-sub" value="50" style="width:80px;padding:7px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center"></div>
             </div>
           </div>
-
-          <div class="section-card">
-            <div class="section-title">Difficulty Level</div>
+          <div class="scard">
+            <div class="stitle">Difficulty Level</div>
             <div class="diff-grid">
-              <div class="diff-option diff-easy" onclick="selectDifficulty('easy',this)"><div class="diff-icon">🟢</div><div class="diff-name">Easy</div><div class="diff-desc">Basic recall</div></div>
-              <div class="diff-option diff-medium" onclick="selectDifficulty('medium',this)"><div class="diff-icon">🟡</div><div class="diff-name">Medium</div><div class="diff-desc">Application based</div></div>
-              <div class="diff-option diff-hard" onclick="selectDifficulty('hard',this)"><div class="diff-icon">🔴</div><div class="diff-name">Hard</div><div class="diff-desc">Higher order</div></div>
+              <div class="dopt diff-easy" onclick="selDiff('easy',this,'tp')"><div class="d-icon">🟢</div><div class="d-name">Easy</div><div class="d-desc">Basic recall</div></div>
+              <div class="dopt diff-medium" onclick="selDiff('medium',this,'tp')"><div class="d-icon">🟡</div><div class="d-name">Medium</div><div class="d-desc">Application based</div></div>
+              <div class="dopt diff-hard" onclick="selDiff('hard',this,'tp')"><div class="d-icon">🔴</div><div class="d-name">Hard</div><div class="d-desc">Higher order</div></div>
             </div>
             <div class="divider"></div>
-            <button class="btn btn-primary btn-full" onclick="generateTestPaper()">✦ Generate Test Paper</button>
+            <button class="btn btn-p btn-full" onclick="generatePaper('test')">✦ Generate Test Paper</button>
           </div>
         </div>
-
         <div>
-          <div class="notes-placeholder" id="tp-placeholder">
-            <div class="np-icon">📄</div>
-            <h3>Test Paper will appear here</h3>
-            <p style="font-size:14px;margin-top:6px">Fill in the details on the left and click Generate.</p>
+          <div class="ph" id="tp-ph"><div class="pi">📄</div><h3>Test Paper will appear here</h3><p style="font-size:14px;margin-top:6px">Fill in the details and click Generate.</p></div>
+          <div class="paper-out" id="tp-out">
+            <div class="p-header"><div class="p-school">Saksham AI — School Platform</div><div class="p-title" id="tp-out-title">Test Paper</div><div class="p-meta" id="tp-out-meta"></div></div>
+            <div id="tp-out-content"></div>
+            <div class="p-actions"><button class="btn btn-p" onclick="dlPDF('test')">⬇ Download PDF</button><button class="btn btn-gh" onclick="generatePaper('test')">↺ Regenerate</button></div>
           </div>
-          <div class="paper-output" id="paper-output">
-            <div class="paper-header">
-              <div class="paper-school">Saksham AI — Delhi Schools</div>
-              <div class="paper-title" id="po-title">Test Paper</div>
-              <div class="paper-meta" id="po-meta"></div>
-            </div>
-            <div id="po-content"></div>
-            <div class="paper-actions">
-              <button class="btn btn-primary" onclick="downloadTestPDF()">⬇ Download PDF</button>
-              <button class="btn btn-ghost" onclick="generateTestPaper()">↺ Regenerate</button>
-            </div>
-          </div>
-          <div id="tp-loading" style="display:none"><div class="loading-state"><div class="spinner"></div><span>Generating your test paper with AI...</span></div></div>
+          <div id="tp-loading" style="display:none"><div class="loading-st"><div class="spinner"></div><span>Generating your test paper with AI...</span></div></div>
         </div>
       </div>
     </div>
 
-    <!-- STUDENT: SAMPLE PAPER GENERATOR -->
-    <div class="feature-screen" id="screen-samplepaper">
+    <!-- STUDENT: SAMPLE PAPER -->
+    <div class="fscreen" id="screen-samplepaper">
       <button class="back-nav" onclick="goToDashboard()">← Back to Dashboard</button>
       <div class="two-col">
         <div>
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Paper Details</div>
-            <div class="form-group"><label>Subject</label><div class="select-wrap"><select id="sp-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
-            <div class="form-group"><label>Class / Grade</label><div class="select-wrap"><select id="sp-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
-            <div class="form-group"><label>Topics / Chapters</label><textarea id="sp-syllabus" placeholder="e.g. Electricity, Magnetic Effects of Current, Light..."></textarea></div>
-            <div class="form-group">
+          <div class="scard">
+            <div class="stitle">Paper Details</div>
+            <div class="fg"><label>Subject</label><div class="sw"><select id="sp-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
+            <div class="fg"><label>Class / Grade</label><div class="sw"><select id="sp-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
+            <div class="fg"><label>Topics / Chapters</label><textarea id="sp-syllabus" placeholder="e.g. Electricity, Magnetic Effects of Current, Light..."></textarea></div>
+            <div class="fg">
               <label>Upload Syllabus File (Optional)</label>
-              <div onclick="document.getElementById('sp-file').click()" style="border:2px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:var(--bg3);" id="sp-upload">
+              <div class="upload-syllabus" id="sp-upload" onclick="document.getElementById('sp-file').click()">
                 <input type="file" id="sp-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onSpFile(this)">
                 <div style="font-size:20px;margin-bottom:5px">📎</div>
                 <div style="font-size:13px;color:var(--muted)" id="sp-file-label">Click to upload PDF or Image</div>
@@ -1056,75 +665,60 @@ body::before {
               </div>
             </div>
           </div>
-
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Total Marks</div>
+          <div class="scard">
+            <div class="stitle">Total Marks</div>
             <div class="marks-row">
-              <button class="mark-btn" onclick="selectSpMarks(20,this)">20</button>
-              <button class="mark-btn" onclick="selectSpMarks(25,this)">25</button>
-              <button class="mark-btn" onclick="selectSpMarks(50,this)">50</button>
-              <button class="mark-btn" onclick="selectSpMarks(80,this)">80</button>
-              <button class="mark-btn" onclick="selectSpMarks(100,this)">100</button>
+              <button class="mbtn spmbtn" onclick="selSpMarks(20,this)">20</button>
+              <button class="mbtn spmbtn" onclick="selSpMarks(25,this)">25</button>
+              <button class="mbtn spmbtn" onclick="selSpMarks(50,this)">50</button>
+              <button class="mbtn spmbtn" onclick="selSpMarks(80,this)">80</button>
+              <button class="mbtn spmbtn" onclick="selSpMarks(100,this)">100</button>
             </div>
           </div>
-
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Question Type</div>
-            <div class="q-type-grid">
-              <div class="q-type-option" onclick="selectSpType('subjective',this)"><div class="q-icon">✍️</div><div class="q-name">Subjective</div><div class="q-desc">Long & short</div></div>
-              <div class="q-type-option" onclick="selectSpType('objective',this)"><div class="q-icon">☑️</div><div class="q-name">Objective</div><div class="q-desc">MCQ, T/F</div></div>
-              <div class="q-type-option" onclick="selectSpType('mix',this)"><div class="q-icon">🔀</div><div class="q-name">Mix</div><div class="q-desc">Both types</div></div>
+          <div class="scard">
+            <div class="stitle">Question Type</div>
+            <div class="qt-grid">
+              <div class="qt-opt" onclick="selType('subjective',this,'sp')"><div class="qt-icon">✍️</div><div class="qt-name">Subjective</div><div class="qt-desc">Long &amp; short</div></div>
+              <div class="qt-opt" onclick="selType('objective',this,'sp')"><div class="qt-icon">☑️</div><div class="qt-name">Objective</div><div class="qt-desc">MCQ, T/F</div></div>
+              <div class="qt-opt" onclick="selType('mix',this,'sp')"><div class="qt-icon">🔀</div><div class="qt-name">Mix</div><div class="qt-desc">Both types</div></div>
             </div>
           </div>
-
-          <div class="section-card">
-            <div class="section-title">Difficulty Level</div>
+          <div class="scard">
+            <div class="stitle">Difficulty Level</div>
             <div class="diff-grid">
-              <div class="diff-option diff-easy" onclick="selectSpDifficulty('easy',this)"><div class="diff-icon">🟢</div><div class="diff-name">Easy</div><div class="diff-desc">Basic recall</div></div>
-              <div class="diff-option diff-medium" onclick="selectSpDifficulty('medium',this)"><div class="diff-icon">🟡</div><div class="diff-name">Medium</div><div class="diff-desc">Application</div></div>
-              <div class="diff-option diff-hard" onclick="selectSpDifficulty('hard',this)"><div class="diff-icon">🔴</div><div class="diff-name">Hard</div><div class="diff-desc">Higher order</div></div>
+              <div class="dopt diff-easy" onclick="selDiff('easy',this,'sp')"><div class="d-icon">🟢</div><div class="d-name">Easy</div><div class="d-desc">Basic recall</div></div>
+              <div class="dopt diff-medium" onclick="selDiff('medium',this,'sp')"><div class="d-icon">🟡</div><div class="d-name">Medium</div><div class="d-desc">Application</div></div>
+              <div class="dopt diff-hard" onclick="selDiff('hard',this,'sp')"><div class="d-icon">🔴</div><div class="d-name">Hard</div><div class="d-desc">Higher order</div></div>
             </div>
             <div class="divider"></div>
-            <button class="btn btn-green btn-full" onclick="generateSamplePaper()">✦ Generate Sample Paper</button>
+            <button class="btn btn-g btn-full" onclick="generatePaper('sp')">✦ Generate Sample Paper</button>
           </div>
         </div>
-
         <div>
-          <div class="notes-placeholder" id="sp-placeholder">
-            <div class="np-icon">📋</div>
-            <h3>Sample Paper will appear here</h3>
-            <p style="font-size:14px;margin-top:6px">Configure your paper and click Generate.</p>
+          <div class="ph" id="sp-ph"><div class="pi">📋</div><h3>Sample Paper will appear here</h3><p style="font-size:14px;margin-top:6px">Configure your paper and click Generate.</p></div>
+          <div class="paper-out" id="sp-out">
+            <div class="p-header"><div class="p-school">Saksham AI — Sample Paper</div><div class="p-title" id="sp-out-title">Sample Paper</div><div class="p-meta" id="sp-out-meta"></div></div>
+            <div id="sp-out-content"></div>
+            <div class="p-actions"><button class="btn btn-g" onclick="dlPDF('sp')">⬇ Download PDF</button><button class="btn btn-gh" onclick="generatePaper('sp')">↺ Regenerate</button></div>
           </div>
-          <div class="paper-output" id="sp-output">
-            <div class="paper-header">
-              <div class="paper-school">Saksham AI — Sample Paper</div>
-              <div class="paper-title" id="sp-po-title">Sample Paper</div>
-              <div class="paper-meta" id="sp-po-meta"></div>
-            </div>
-            <div id="sp-po-content"></div>
-            <div class="paper-actions">
-              <button class="btn btn-green" onclick="downloadSpPDF()">⬇ Download PDF</button>
-              <button class="btn btn-ghost" onclick="generateSamplePaper()">↺ Regenerate</button>
-            </div>
-          </div>
-          <div id="sp-loading" style="display:none"><div class="loading-state"><div class="spinner" style="border-top-color:var(--green)"></div><span>Creating your sample paper...</span></div></div>
+          <div id="sp-loading" style="display:none"><div class="loading-st"><div class="spinner" style="border-top-color:var(--green)"></div><span>Creating your sample paper...</span></div></div>
         </div>
       </div>
     </div>
 
-    <!-- STUDENT: INSTANT NOTES GENERATOR -->
-    <div class="feature-screen" id="screen-notes">
+    <!-- STUDENT: NOTES -->
+    <div class="fscreen" id="screen-notes">
       <button class="back-nav" onclick="goToDashboard()">← Back to Dashboard</button>
       <div class="two-col">
         <div>
-          <div class="section-card" style="margin-bottom:20px">
-            <div class="section-title">Topic & Class</div>
-            <div class="form-group"><label>Class / Grade</label><div class="select-wrap"><select id="notes-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
-            <div class="form-group"><label>Subject</label><div class="select-wrap"><select id="notes-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
-            <div class="form-group"><label>Topic / Chapter</label><textarea id="notes-topic" placeholder="e.g. Chapter 12: Electricity — concepts of resistance, Ohm's Law, series and parallel circuits..." style="min-height:100px"></textarea></div>
-            <div class="form-group">
-              <label>Upload Syllabus / Notes File (Optional)</label>
-              <div onclick="document.getElementById('notes-file').click()" style="border:2px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:var(--bg3);" id="notes-upload">
+          <div class="scard">
+            <div class="stitle">Topic &amp; Class</div>
+            <div class="fg"><label>Class / Grade</label><div class="sw"><select id="notes-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
+            <div class="fg"><label>Subject</label><div class="sw"><select id="notes-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
+            <div class="fg"><label>Topic / Chapter</label><textarea id="notes-topic" placeholder="e.g. Chapter 12: Electricity — resistance, Ohm's Law, series and parallel circuits..." style="min-height:100px"></textarea></div>
+            <div class="fg">
+              <label>Upload File (Optional)</label>
+              <div class="upload-syllabus" id="notes-upload" onclick="document.getElementById('notes-file').click()">
                 <input type="file" id="notes-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onNotesFile(this)">
                 <div style="font-size:20px;margin-bottom:5px">📎</div>
                 <div style="font-size:13px;color:var(--muted)" id="notes-file-label">Click to upload PDF or Image</div>
@@ -1132,38 +726,25 @@ body::before {
               </div>
             </div>
           </div>
-
-          <div class="section-card">
-            <div class="section-title">Notes Style</div>
-            <div class="q-type-grid">
-              <div class="q-type-option" onclick="selectNotesStyle('concise',this)" id="ns-concise"><div class="q-icon">⚡</div><div class="q-name">Concise</div><div class="q-desc">Key points only</div></div>
-              <div class="q-type-option" onclick="selectNotesStyle('detailed',this)" id="ns-detailed"><div class="q-icon">📖</div><div class="q-name">Detailed</div><div class="q-desc">In-depth coverage</div></div>
-              <div class="q-type-option" onclick="selectNotesStyle('exam',this)" id="ns-exam"><div class="q-icon">🎯</div><div class="q-name">Exam Ready</div><div class="q-desc">Exam focused</div></div>
+          <div class="scard">
+            <div class="stitle">Notes Style</div>
+            <div class="qt-grid">
+              <div class="qt-opt" onclick="selNotesStyle('concise',this)"><div class="qt-icon">⚡</div><div class="qt-name">Concise</div><div class="qt-desc">Key points only</div></div>
+              <div class="qt-opt" onclick="selNotesStyle('detailed',this)"><div class="qt-icon">📖</div><div class="qt-name">Detailed</div><div class="qt-desc">In-depth coverage</div></div>
+              <div class="qt-opt" onclick="selNotesStyle('exam',this)"><div class="qt-icon">🎯</div><div class="qt-name">Exam Ready</div><div class="qt-desc">Exam focused</div></div>
             </div>
             <div class="divider"></div>
-            <button class="btn btn-amber btn-full" onclick="generateNotes()" style="background:linear-gradient(135deg,#f0a500,#e08000);box-shadow:0 4px 20px #f0a50033;">✦ Generate Notes</button>
+            <button class="btn btn-a btn-full" onclick="generateNotes()">✦ Generate Notes</button>
           </div>
         </div>
-
         <div>
-          <div class="notes-placeholder" id="notes-placeholder">
-            <div class="np-icon">📝</div>
-            <h3>Your notes will appear here</h3>
-            <p style="font-size:14px;margin-top:6px">Enter a topic and click Generate to create comprehensive study notes.</p>
+          <div class="ph" id="notes-ph"><div class="pi">📝</div><h3>Your notes will appear here</h3><p style="font-size:14px;margin-top:6px">Enter a topic and click Generate to create comprehensive study notes.</p></div>
+          <div class="notes-out" id="notes-out">
+            <div class="p-header"><div class="p-school">Saksham AI — Study Notes</div><div class="p-title" id="notes-out-title">Study Notes</div><div class="p-meta" id="notes-out-meta"></div></div>
+            <div class="notes-content" id="notes-out-content"></div>
+            <div class="p-actions"><button class="btn btn-a" onclick="dlNotesPDF()">⬇ Download PDF</button><button class="btn btn-gh" onclick="generateNotes()">↺ Regenerate</button></div>
           </div>
-          <div class="notes-output" id="notes-output">
-            <div class="paper-header">
-              <div class="paper-school">Saksham AI — Study Notes</div>
-              <div class="paper-title" id="notes-title-display">Study Notes</div>
-              <div class="paper-meta" id="notes-meta-display"></div>
-            </div>
-            <div class="notes-content" id="notes-content-display"></div>
-            <div class="notes-actions">
-              <button class="btn btn-amber" onclick="downloadNotesPDF()" style="background:linear-gradient(135deg,#f0a500,#e08000);box-shadow:0 4px 20px #f0a50033;">⬇ Download as PDF</button>
-              <button class="btn btn-ghost" onclick="generateNotes()">↺ Regenerate</button>
-            </div>
-          </div>
-          <div id="notes-loading" style="display:none"><div class="loading-state"><div class="spinner" style="border-top-color:var(--amber)"></div><span>Generating comprehensive study notes...</span></div></div>
+          <div id="notes-loading" style="display:none"><div class="loading-st"><div class="spinner" style="border-top-color:var(--amber)"></div><span>Generating comprehensive study notes...</span></div></div>
         </div>
       </div>
     </div>
@@ -1173,7 +754,7 @@ body::before {
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
+<!-- Firebase Auth -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1188,124 +769,126 @@ const firebaseConfig = {
   appId: "1:397132515510:web:784316a6eb4c039f6cbe17"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const fireApp = initializeApp(firebaseConfig);
+const auth = getAuth(fireApp);
+const db = getFirestore(fireApp);
 
-let currentPortal = 'teacher';
-
+// ── AUTH STATE — single source of truth ──
 onAuthStateChanged(auth, async (user) => {
+  const splash = document.getElementById('splash');
+  const authScr = document.getElementById('auth-screen');
+  const appScr  = document.getElementById('app-screen');
+
   if (user) {
-    document.getElementById('auth-screen').classList.remove('visible');
-    document.getElementById('app-screen').classList.add('visible');
+    // User is signed in
+    splash.classList.add('hidden');
+    authScr.classList.remove('show');
+    appScr.classList.add('show');
+
     try {
-      // Try teacher collection first
       let snap = await getDoc(doc(db, 'teachers', user.uid));
       if (snap.exists()) {
-        const data = snap.data();
-        currentPortal = 'teacher';
-        setupDashboard('teacher', data.name || user.email, 'ID: ' + (data.teacherId || ''));
-      } else {
-        // Try student collection
-        snap = await getDoc(doc(db, 'students', user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          currentPortal = 'student';
-          setupDashboard('student', data.name || user.email, data.class || '');
-        } else {
-          setupDashboard(currentPortal, user.email, '');
-        }
+        const d = snap.data();
+        setupDashboard('teacher', d.name || user.email, d.teacherId ? 'ID: '+d.teacherId : '');
+        return;
       }
+      snap = await getDoc(doc(db, 'students', user.uid));
+      if (snap.exists()) {
+        const d = snap.data();
+        setupDashboard('student', d.name || user.email, d.class || '');
+        return;
+      }
+      setupDashboard('teacher', user.email, '');
     } catch(e) {
-      setupDashboard(currentPortal, user.email, '');
+      setupDashboard('teacher', user.email, '');
     }
   } else {
-    document.getElementById('auth-screen').classList.add('visible');
-    document.getElementById('app-screen').classList.remove('visible');
+    // Not signed in — show auth only if splash is hidden
+    appScr.classList.remove('show');
+    if (splash.classList.contains('hidden')) {
+      authScr.classList.add('show');
+    }
+    // else splash is still showing, user hasn't clicked "Get Started" yet
   }
 });
 
 window.doRegister = async (portal) => {
   if (portal === 'teacher') {
-    const name=document.getElementById('t-reg-name').value.trim();
-    const email=document.getElementById('t-reg-email').value.trim();
-    const uid=document.getElementById('t-reg-uid').value.trim();
-    const pass=document.getElementById('t-reg-pass').value;
-    if(!name){showAuthError('t-reg-error','Please enter your full name.');return;}
-    if(!email){showAuthError('t-reg-error','Please enter your email address.');return;}
-    if(!uid){showAuthError('t-reg-error','Please enter your School ID.');return;}
-    if(pass.length<6){showAuthError('t-reg-error','Password must be at least 6 characters.');return;}
-    const btn=document.getElementById('t-reg-btn');btn.disabled=true;btn.textContent='Creating...';
+    const name=document.getElementById('tr-name').value.trim();
+    const email=document.getElementById('tr-email').value.trim();
+    const uid=document.getElementById('tr-sid').value.trim();
+    const pass=document.getElementById('tr-pass').value;
+    if(!name){showAuthErr('t-reg-err','Please enter your full name.');return;}
+    if(!email){showAuthErr('t-reg-err','Please enter your email address.');return;}
+    if(!uid){showAuthErr('t-reg-err','Please enter your School ID.');return;}
+    if(pass.length<6){showAuthErr('t-reg-err','Password must be at least 6 characters.');return;}
+    const btn=document.getElementById('tr-btn'); btn.disabled=true; btn.textContent='Creating...';
     try{
       const q=query(collection(db,'teachers'),where('teacherId','==',uid));
       const ex=await getDocs(q);
-      if(!ex.empty){showAuthError('t-reg-error','This School ID is already registered.');btn.disabled=false;btn.textContent='Create Account →';return;}
+      if(!ex.empty){showAuthErr('t-reg-err','This School ID is already registered.');btn.disabled=false;btn.textContent='Create Account →';return;}
       const uc=await createUserWithEmailAndPassword(auth,email,pass);
       await updateProfile(uc.user,{displayName:name});
       await setDoc(doc(db,'teachers',uc.user.uid),{name,email,teacherId:uid,createdAt:new Date().toISOString()});
       showToast('✓ Account created! Welcome, '+name,'success');
-    }catch(err){showAuthError('t-reg-error',getFirebaseError(err.code));btn.disabled=false;btn.textContent='Create Account →';}
+    }catch(err){showAuthErr('t-reg-err',fbErr(err.code));btn.disabled=false;btn.textContent='Create Account →';}
   } else {
-    const name=document.getElementById('s-reg-name').value.trim();
-    const email=document.getElementById('s-reg-email').value.trim();
-    const cls=document.getElementById('s-reg-class').value.trim();
-    const pass=document.getElementById('s-reg-pass').value;
-    if(!name){showAuthError('s-reg-error','Please enter your full name.');return;}
-    if(!email){showAuthError('s-reg-error','Please enter your email address.');return;}
-    if(!cls){showAuthError('s-reg-error','Please enter your class.');return;}
-    if(pass.length<6){showAuthError('s-reg-error','Password must be at least 6 characters.');return;}
-    const btn=document.getElementById('s-reg-btn');btn.disabled=true;btn.textContent='Creating...';
+    const name=document.getElementById('sr-name').value.trim();
+    const email=document.getElementById('sr-email').value.trim();
+    const cls=document.getElementById('sr-class').value.trim();
+    const pass=document.getElementById('sr-pass').value;
+    if(!name){showAuthErr('s-reg-err','Please enter your full name.');return;}
+    if(!email){showAuthErr('s-reg-err','Please enter your email address.');return;}
+    if(!cls){showAuthErr('s-reg-err','Please enter your class.');return;}
+    if(pass.length<6){showAuthErr('s-reg-err','Password must be at least 6 characters.');return;}
+    const btn=document.getElementById('sr-btn'); btn.disabled=true; btn.textContent='Creating...';
     try{
       const uc=await createUserWithEmailAndPassword(auth,email,pass);
       await updateProfile(uc.user,{displayName:name});
       await setDoc(doc(db,'students',uc.user.uid),{name,email,class:cls,createdAt:new Date().toISOString()});
       showToast('✓ Account created! Welcome, '+name,'success');
-    }catch(err){showAuthError('s-reg-error',getFirebaseError(err.code));btn.disabled=false;btn.textContent='Create Account →';}
+    }catch(err){showAuthErr('s-reg-err',fbErr(err.code));btn.disabled=false;btn.textContent='Create Account →';}
   }
 };
 
 window.doLogin = async (portal) => {
-  let email='', pass='', btnId='', errId='';
-  if (portal==='teacher') {
-    pass=document.getElementById('t-login-pass').value;
-    btnId='t-login-btn'; errId='t-login-error';
-    if(!pass){showAuthError(errId,'Please enter your password.');return;}
-    const btn=document.getElementById(btnId);btn.disabled=true;btn.textContent='Signing in...';
+  if (portal === 'teacher') {
+    const pass=document.getElementById('tl-pass').value;
+    if(!pass){showAuthErr('t-login-err','Please enter your password.');return;}
+    const btn=document.getElementById('tl-btn'); btn.disabled=true; btn.textContent='Signing in...';
     try{
+      let email='';
       if(currentTChoice==='email'){
-        email=document.getElementById('t-login-email').value.trim();
-        if(!email){showAuthError(errId,'Please enter your email.');btn.disabled=false;btn.textContent='Sign In →';return;}
+        email=document.getElementById('tl-email').value.trim();
+        if(!email){showAuthErr('t-login-err','Please enter your email.');btn.disabled=false;btn.textContent='Sign In →';return;}
       } else {
-        const sid=document.getElementById('t-login-schoolid').value.trim();
-        if(!sid){showAuthError(errId,'Please enter your School ID.');btn.disabled=false;btn.textContent='Sign In →';return;}
+        const sid=document.getElementById('tl-sid').value.trim();
+        if(!sid){showAuthErr('t-login-err','Please enter your School ID.');btn.disabled=false;btn.textContent='Sign In →';return;}
         const q=query(collection(db,'teachers'),where('teacherId','==',sid));
         const snap=await getDocs(q);
-        if(snap.empty){showAuthError(errId,'School ID not found.');btn.disabled=false;btn.textContent='Sign In →';return;}
+        if(snap.empty){showAuthErr('t-login-err','School ID not found. Please check and try again.');btn.disabled=false;btn.textContent='Sign In →';return;}
         email=snap.docs[0].data().email;
       }
-      currentPortal='teacher';
       await signInWithEmailAndPassword(auth,email,pass);
       showToast('✓ Welcome back!','success');
-    }catch(err){showAuthError(errId,getFirebaseError(err.code));btn.disabled=false;btn.textContent='Sign In →';}
+    }catch(err){showAuthErr('t-login-err',fbErr(err.code));btn.disabled=false;btn.textContent='Sign In →';}
   } else {
-    email=document.getElementById('s-login-email').value.trim();
-    pass=document.getElementById('s-login-pass').value;
-    btnId='s-login-btn'; errId='s-login-error';
-    if(!email){showAuthError(errId,'Please enter your email.');return;}
-    if(!pass){showAuthError(errId,'Please enter your password.');return;}
-    const btn=document.getElementById(btnId);btn.disabled=true;btn.textContent='Signing in...';
+    const email=document.getElementById('sl-email').value.trim();
+    const pass=document.getElementById('sl-pass').value;
+    if(!email){showAuthErr('s-login-err','Please enter your email.');return;}
+    if(!pass){showAuthErr('s-login-err','Please enter your password.');return;}
+    const btn=document.getElementById('sl-btn'); btn.disabled=true; btn.textContent='Signing in...';
     try{
-      currentPortal='student';
       await signInWithEmailAndPassword(auth,email,pass);
       showToast('✓ Welcome back!','success');
-    }catch(err){showAuthError(errId,getFirebaseError(err.code));btn.disabled=false;btn.textContent='Sign In →';}
+    }catch(err){showAuthErr('s-login-err',fbErr(err.code));btn.disabled=false;btn.textContent='Sign In →';}
   }
 };
 
 window.doLogout = async () => { await signOut(auth); showToast('Signed out successfully.',''); };
 
-function showAuthError(id, msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
-function getFirebaseError(code){
+function showAuthErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function fbErr(code){
   const e={'auth/email-already-in-use':'This email is already registered.','auth/invalid-email':'Invalid email format.','auth/wrong-password':'Incorrect password.','auth/user-not-found':'No account found with this email.','auth/weak-password':'Password is too weak.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/network-request-failed':'Network error. Please check your connection.','auth/invalid-credential':'Invalid email or password.'};
   return e[code]||'An error occurred. Please try again.';
 }
@@ -1314,454 +897,419 @@ function getFirebaseError(code){
 <script>
 const API_URL = "https://school-ai-backend-6tta.onrender.com";
 let currentTChoice = 'email';
-let schoolData = { teachers: [], classes: [], subjects: [] };
+let schoolData = { teachers:[], classes:[], subjects:[] };
 let absentTeachers = new Map();
-let selectedMarks = null, selectedType = null, selectedDifficulty = null, selectedQuestions = null;
-let selectedSpMarks = null, selectedSpType = null, selectedSpDifficulty = null;
-let selectedNotesStyle = null;
-let tpSyllabusFile = null, spFile = null, notesFile = null;
-let lastTestPaperData = null, lastSpData = null, lastNotesData = null;
+let selM=null,selT=null,selD=null,selQ=null;
+let selSpM=null,selSpT=null,selSpD=null;
+let selNS=null;
+let tpFile=null,spFile=null,notesFile=null;
+let lastTpData=null,lastSpData=null,lastNotesData=null;
+let tpTypePrefix='tp',spTypePrefix='sp';
 
-/* ── Splash ── */
+/* Splash */
 window.enterPlatform = () => {
   document.getElementById('splash').classList.add('hidden');
-  document.getElementById('auth-screen').classList.add('visible');
+  // Only show auth if not already logged in (onAuthStateChanged handles this)
+  // but we need to show auth screen for unauthenticated users
+  const appScr = document.getElementById('app-screen');
+  if (!appScr.classList.contains('show')) {
+    document.getElementById('auth-screen').classList.add('show');
+  }
 };
 
-/* ── Portal switch ── */
-window.switchPortal = (portal) => {
-  const tb = document.getElementById('portal-teacher-btn');
-  const sb = document.getElementById('portal-student-btn');
-  const ta = document.getElementById('auth-teacher');
-  const sa = document.getElementById('auth-student');
-  if (portal === 'teacher') {
-    tb.className = 'portal-btn active-teacher';
-    sb.className = 'portal-btn';
+/* Portal switch */
+window.switchPortal = (p) => {
+  const tb=document.getElementById('pt-teacher'), sb=document.getElementById('pt-student');
+  const ta=document.getElementById('auth-teacher'), sa=document.getElementById('auth-student');
+  if(p==='teacher'){
+    tb.className='portal-btn active-teacher'; sb.className='portal-btn';
     ta.classList.add('active'); sa.classList.remove('active');
   } else {
-    sb.className = 'portal-btn active-student';
-    tb.className = 'portal-btn';
+    sb.className='portal-btn active-student'; tb.className='portal-btn';
     sa.classList.add('active'); ta.classList.remove('active');
   }
 };
 
-/* ── Auth tabs ── */
-window.switchAuthTab = (id, btn) => {
-  const parent = btn.closest('.auth-form-section');
-  parent.querySelectorAll('.form-tab').forEach(b => b.classList.remove('active'));
-  parent.querySelectorAll('.panel-section').forEach(p => p.classList.remove('active'));
+/* Auth tabs */
+window.switchTab = (id, btn) => {
+  const p = btn.closest('.auth-form-section');
+  p.querySelectorAll('.form-tab').forEach(b=>b.classList.remove('active'));
+  p.querySelectorAll('.panel-section').forEach(s=>s.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(id).classList.add('active');
-  parent.querySelectorAll('.auth-error').forEach(e => { e.style.display='none'; e.textContent=''; });
+  p.querySelectorAll('.auth-error').forEach(e=>{e.style.display='none';e.textContent='';});
 };
 
-/* ── Teacher login choice ── */
-window.switchTChoice = (choice) => {
-  currentTChoice = choice;
-  document.getElementById('t-email-field').style.display = choice==='email'?'block':'none';
-  document.getElementById('t-id-field').style.display = choice==='schoolid'?'block':'none';
-  document.getElementById('tc-email-btn').className = 'login-choice-btn' + (choice==='email'?' active':'');
-  document.getElementById('tc-id-btn').className = 'login-choice-btn' + (choice==='schoolid'?' active':'');
+/* Teacher login choice */
+window.switchTChoice = (c) => {
+  currentTChoice = c;
+  document.getElementById('t-email-f').className = 'field-block'+(c==='email'?' show':'');
+  document.getElementById('t-id-f').className = 'field-block'+(c==='id'?' show':'');
+  document.getElementById('tc-email').className = 'lcb'+(c==='email'?' active':'');
+  document.getElementById('tc-id').className = 'lcb'+(c==='id'?' active':'');
 };
 
-/* ── Dashboard setup ── */
+/* Dashboard setup */
 function setupDashboard(portal, name, id) {
-  document.getElementById('header-user-name').textContent = name;
-  document.getElementById('header-user-id').textContent = id;
-  const badge = document.getElementById('header-portal-badge');
+  document.getElementById('hdr-name').textContent = name;
+  document.getElementById('hdr-id').textContent = id;
+  const badge = document.getElementById('hdr-badge');
+  goToDashboard();
   if (portal === 'teacher') {
-    badge.textContent = 'Teacher Portal';
-    badge.className = 'portal-badge portal-badge-teacher';
-    document.getElementById('dash-tag').className = 'dashboard-tag tag-teacher';
-    document.getElementById('dash-tag').innerHTML = '⚡ Teacher Dashboard';
-    document.getElementById('dash-title').textContent = 'AI-Powered Tools\nfor Educators';
-    document.getElementById('dash-sub').textContent = 'Streamline substitute allocation and generate professional test papers with the power of AI.';
-    document.getElementById('feature-grid').innerHTML = `
-      <div class="feature-card feature-card-teacher" onclick="openScreen('substitution')">
-        <div class="card-badge badge-teacher">AI Powered</div>
-        <div class="card-icon icon-teacher">👨‍🏫</div>
-        <div class="card-content">
-          <div class="card-title">Teacher Substitution</div>
-          <div class="card-desc">Instantly find the best substitute for absent teachers. AI ranks candidates based on workload, subject match, and performance rating.</div>
-        </div>
+    badge.textContent='Teacher Portal'; badge.className='portal-badge pb-teacher';
+    document.getElementById('dash-tag').className='dash-tag tag-t';
+    document.getElementById('dash-tag').innerHTML='⚡ Teacher Dashboard';
+    document.getElementById('dash-title').textContent='AI-Powered Tools for Educators';
+    document.getElementById('dash-sub').textContent='Streamline substitute allocation and generate professional test papers with the power of AI.';
+    document.getElementById('feature-grid').innerHTML=`
+      <div class="fcard fc-t" onclick="openScreen('substitution')">
+        <div class="card-badge cb-t">AI Powered</div>
+        <div class="card-icon ci-t">👨‍🏫</div>
+        <div class="card-content"><div class="card-title">Teacher Substitution</div><div class="card-desc">Instantly find the best substitute for absent teachers. AI ranks candidates based on workload, subject match, and performance rating.</div></div>
         <div class="card-arrow">→</div>
       </div>
-      <div class="feature-card feature-card-teacher" onclick="openScreen('testpaper')">
-        <div class="card-badge badge-teacher">AI Generated</div>
-        <div class="card-icon icon-teacher">📝</div>
-        <div class="card-content">
-          <div class="card-title">Test Paper Generator</div>
-          <div class="card-desc">Generate complete, curriculum-aligned test papers in seconds. Choose subject, marks, question type, and difficulty — AI does the rest.</div>
-        </div>
+      <div class="fcard fc-t" onclick="openScreen('testpaper')">
+        <div class="card-badge cb-t">AI Generated</div>
+        <div class="card-icon ci-t">📝</div>
+        <div class="card-content"><div class="card-title">Test Paper Generator</div><div class="card-desc">Generate complete, curriculum-aligned test papers in seconds. Choose subject, marks, question type, and difficulty — AI does the rest.</div></div>
         <div class="card-arrow">→</div>
       </div>`;
   } else {
-    badge.textContent = 'Student Portal';
-    badge.className = 'portal-badge portal-badge-student';
-    document.getElementById('dash-tag').className = 'dashboard-tag tag-student';
-    document.getElementById('dash-tag').innerHTML = '🎓 Student Dashboard';
-    document.getElementById('dash-title').textContent = 'Your Personal\nAI Study Partner';
-    document.getElementById('dash-sub').textContent = 'Practice with AI-generated sample papers and create comprehensive study notes instantly.';
-    document.getElementById('feature-grid').innerHTML = `
-      <div class="feature-card feature-card-student-1" onclick="openScreen('samplepaper')">
-        <div class="card-badge badge-student-1">Practice Tool</div>
-        <div class="card-icon icon-student-1">📋</div>
-        <div class="card-content">
-          <div class="card-title">Sample Paper Generator</div>
-          <div class="card-desc">Generate realistic sample papers for any subject and class. Select your topics, difficulty level, and marks — practise smarter, not harder.</div>
-        </div>
+    badge.textContent='Student Portal'; badge.className='portal-badge pb-student';
+    document.getElementById('dash-tag').className='dash-tag tag-s';
+    document.getElementById('dash-tag').innerHTML='🎓 Student Dashboard';
+    document.getElementById('dash-title').textContent='Your Personal AI Study Partner';
+    document.getElementById('dash-sub').textContent='Practise with AI-generated sample papers and create comprehensive study notes instantly.';
+    document.getElementById('feature-grid').innerHTML=`
+      <div class="fcard fc-s1" onclick="openScreen('samplepaper')">
+        <div class="card-badge cb-s1">Practice Tool</div>
+        <div class="card-icon ci-s1">📋</div>
+        <div class="card-content"><div class="card-title">Sample Paper Generator</div><div class="card-desc">Generate realistic sample papers for any subject and class. Select topics, difficulty and marks — practise smarter, not harder.</div></div>
         <div class="card-arrow">→</div>
       </div>
-      <div class="feature-card feature-card-student-2" onclick="openScreen('notes')">
-        <div class="card-badge badge-student-2">AI Notes</div>
-        <div class="card-icon icon-student-2">📝</div>
-        <div class="card-content">
-          <div class="card-title">Instant Notes Generator</div>
-          <div class="card-desc">Turn any topic or chapter into structured, exam-ready study notes. Upload your syllabus or simply type a topic — get professional notes instantly.</div>
-        </div>
+      <div class="fcard fc-s2" onclick="openScreen('notes')">
+        <div class="card-badge cb-s2">AI Notes</div>
+        <div class="card-icon ci-s2">📝</div>
+        <div class="card-content"><div class="card-title">Instant Notes Generator</div><div class="card-desc">Turn any topic or chapter into structured, exam-ready study notes. Upload your syllabus or type a topic — get professional notes instantly.</div></div>
         <div class="card-arrow">→</div>
       </div>`;
   }
-  goToDashboard();
 }
 
-/* ── Navigation ── */
-window.openScreen = (screen) => {
-  document.getElementById('dashboard-view').style.display = 'none';
-  document.querySelectorAll('.feature-screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + screen).classList.add('active');
+/* Navigation */
+window.openScreen = (s) => {
+  document.getElementById('view-dashboard').style.display='none';
+  document.querySelectorAll('.fscreen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
 };
 window.goToDashboard = () => {
-  document.getElementById('dashboard-view').style.display = 'block';
-  document.querySelectorAll('.feature-screen').forEach(s => s.classList.remove('active'));
-  resetSubstitution();
+  document.getElementById('view-dashboard').style.display='block';
+  document.querySelectorAll('.fscreen').forEach(x=>x.classList.remove('active'));
+  resetSub();
 };
 
-/* ── Substitution ── */
+/* Substitution */
 window.loadDemoData = async () => {
-  showToast('Loading demo school data...', '');
-  try {
-    const teachers = await fetch(`${API_URL}/teachers/1`).then(r => r.json());
-    if (teachers && teachers.length > 0) {
-      schoolData.teachers = teachers;
-      schoolData.classes = await fetch(`${API_URL}/classes/1`).then(r => r.json());
-      schoolData.subjects = await fetch(`${API_URL}/subjects/1`).then(r => r.json());
-      afterDataLoaded();
-      showToast(`✓ ${teachers.length} teachers loaded successfully.`, 'success');
-    } else { showToast('No data found. Please try again.', 'error'); }
-  } catch { showToast('Unable to connect to server. Please try again.', 'error'); }
+  showToast('Loading demo school data...','');
+  try{
+    const t=await fetch(`${API_URL}/teachers/1`).then(r=>r.json());
+    if(t&&t.length>0){
+      schoolData.teachers=t;
+      schoolData.classes=await fetch(`${API_URL}/classes/1`).then(r=>r.json());
+      schoolData.subjects=await fetch(`${API_URL}/subjects/1`).then(r=>r.json());
+      afterDataLoaded(); showToast(`✓ ${t.length} teachers loaded.`,'success');
+    }else{showToast('No data found.','error');}
+  }catch{showToast('Unable to connect to server.','error');}
 };
 
-function afterDataLoaded() {
-  document.getElementById('stat-teachers').textContent = schoolData.teachers.length;
-  document.getElementById('stat-classes').textContent = schoolData.classes.length;
-  document.getElementById('stat-slots').textContent = schoolData.teachers.length * 8 * 6;
-  const sc = document.getElementById('sel-class');
-  sc.innerHTML = '<option value="">Select class</option>';
-  schoolData.classes.forEach(c => sc.innerHTML += `<option>${c}</option>`);
-  const ss = document.getElementById('sel-subject');
-  ss.innerHTML = '<option value="">Select subject</option>';
-  schoolData.subjects.forEach(s => ss.innerHTML += `<option>${s}</option>`);
-  renderTeacherList(schoolData.teachers);
-  goToStep(2);
+function afterDataLoaded(){
+  document.getElementById('stat-teachers').textContent=schoolData.teachers.length;
+  document.getElementById('stat-classes').textContent=schoolData.classes.length;
+  document.getElementById('stat-slots').textContent=schoolData.teachers.length*8*6;
+  const sc=document.getElementById('sel-class'); sc.innerHTML='<option value="">Select class</option>';
+  schoolData.classes.forEach(c=>sc.innerHTML+=`<option>${c}</option>`);
+  const ss=document.getElementById('sel-subject'); ss.innerHTML='<option value="">Select subject</option>';
+  schoolData.subjects.forEach(s=>ss.innerHTML+=`<option>${s}</option>`);
+  renderTeacherList(schoolData.teachers); goToStep(2);
 }
 
-function renderTeacherList(teachers) {
-  const list = document.getElementById('teacher-list'); list.innerHTML = '';
-  teachers.forEach(t => {
-    const initials = t.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-    const li = absentTeachers.get(t.name);
-    const ac = li ? `absent-${li.type}` : '';
-    const tag = li ? leaveTagHtml(li.type) : `<span class="t-workload">${t.workload} slots</span>`;
-    list.innerHTML += `<div class="teacher-item ${ac}" onclick="onTeacherClick('${t.name}')"><div class="t-avatar">${initials}</div><div class="t-info"><div class="t-name">${t.name}</div><div class="t-subject">${t.subject}</div></div>${tag}</div>`;
+function renderTeacherList(ts){
+  const list=document.getElementById('teacher-list'); list.innerHTML='';
+  ts.forEach(t=>{
+    const ini=t.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const li=absentTeachers.get(t.name);
+    const ac=li?`absent-${li.type}`:'';
+    const tag=li?lTag(li.type):`<span class="t-wl">${t.workload} slots</span>`;
+    list.innerHTML+=`<div class="teacher-item ${ac}" onclick="onTClick('${t.name}')"><div class="t-av">${ini}</div><div class="t-info"><div class="t-name">${t.name}</div><div class="t-sub">${t.subject}</div></div>${tag}</div>`;
   });
 }
-function leaveTagHtml(type) {
-  if(type==='full') return `<span class="leave-tag tag-full">Full Day</span>`;
-  if(type==='first') return `<span class="leave-tag tag-first">1st Half</span>`;
-  if(type==='second') return `<span class="leave-tag tag-second">2nd Half</span>`;
-  return '';
+function lTag(type){
+  if(type==='full')return`<span class="leave-tag ltf">Full Day</span>`;
+  if(type==='first')return`<span class="leave-tag lt1">1st Half</span>`;
+  if(type==='second')return`<span class="leave-tag lt2">2nd Half</span>`;
+  return'';
 }
-window.onTeacherClick = (name) => {
-  if(absentTeachers.has(name)){absentTeachers.delete(name);updateAbsentSummary();updateFindBtn();renderTeacherList(schoolData.teachers);return;}
+window.onTClick=(name)=>{
+  if(absentTeachers.has(name)){absentTeachers.delete(name);updateAbSum();updateFindBtn();renderTeacherList(schoolData.teachers);return;}
   showLeavePopup(name);
 };
-function showLeavePopup(name) {
-  const t = schoolData.teachers.find(x => x.name === name);
-  const pop = document.createElement('div'); pop.className='leave-popup'; pop.id='leave-popup';
-  pop.innerHTML = `<div class="leave-popup-card"><div class="leave-popup-name">${name}</div><div class="leave-popup-sub">${t?t.subject:''} — Select leave type</div><div class="leave-options"><div class="leave-option" onclick="setLeave('${name}','full')"><div class="leave-option-icon icon-full">🔴</div><div class="leave-option-text"><p>Full Day Leave</p><small>Absent for all periods (1 – 8)</small></div></div><div class="leave-option" onclick="setLeave('${name}','first')"><div class="leave-option-icon icon-first">🟡</div><div class="leave-option-text"><p>First Half Leave</p><small>Absent for periods 1 – 4 only</small></div></div><div class="leave-option" onclick="setLeave('${name}','second')"><div class="leave-option-icon icon-second">🟣</div><div class="leave-option-text"><p>Second Half Leave</p><small>Absent for periods 5 – 8 only</small></div></div></div><button class="leave-cancel" onclick="closeLeavePopup()">Cancel</button></div>`;
+function showLeavePopup(name){
+  const t=schoolData.teachers.find(x=>x.name===name);
+  const pop=document.createElement('div'); pop.className='leave-popup'; pop.id='lp';
+  pop.innerHTML=`<div class="lp-card"><div class="lp-name">${name}</div><div class="lp-sub">${t?t.subject:''} — Select leave type</div><div class="leave-options"><div class="leave-option" onclick="setLeave('${name}','full')"><div class="lo-icon iof">🔴</div><div class="lo-text"><p>Full Day Leave</p><small>Absent for all periods (1–8)</small></div></div><div class="leave-option" onclick="setLeave('${name}','first')"><div class="lo-icon io1st">🟡</div><div class="lo-text"><p>First Half Leave</p><small>Absent for periods 1–4 only</small></div></div><div class="leave-option" onclick="setLeave('${name}','second')"><div class="lo-icon io2nd">🟣</div><div class="lo-text"><p>Second Half Leave</p><small>Absent for periods 5–8 only</small></div></div></div><button class="leave-cancel" onclick="closeLP()">Cancel</button></div>`;
   document.body.appendChild(pop);
-  pop.addEventListener('click', e => { if(e.target===pop) closeLeavePopup(); });
+  pop.addEventListener('click',e=>{if(e.target===pop)closeLP();});
 }
-window.setLeave = (name, type) => { absentTeachers.set(name,{type}); closeLeavePopup(); updateAbsentSummary(); updateFindBtn(); renderTeacherList(schoolData.teachers); };
-window.closeLeavePopup = () => { const p=document.getElementById('leave-popup'); if(p)p.remove(); };
-window.filterTeachers = (q) => { renderTeacherList(schoolData.teachers.filter(t => t.name.toLowerCase().includes(q.toLowerCase())||t.subject.toLowerCase().includes(q.toLowerCase()))); };
-
-function updateAbsentSummary() {
-  const el = document.getElementById('absent-summary');
-  if(absentTeachers.size > 0) {
+window.setLeave=(n,t)=>{absentTeachers.set(n,{type:t});closeLP();updateAbSum();updateFindBtn();renderTeacherList(schoolData.teachers);};
+window.closeLP=()=>{const p=document.getElementById('lp');if(p)p.remove();};
+window.filterTeachers=(q)=>{renderTeacherList(schoolData.teachers.filter(t=>t.name.toLowerCase().includes(q.toLowerCase())||t.subject.toLowerCase().includes(q.toLowerCase())));};
+function updateAbSum(){
+  const el=document.getElementById('absent-sum');
+  if(absentTeachers.size>0){
     el.style.display='block';
-    const lines = [...absentTeachers.entries()].map(([n,i]) => `<span style="color:var(--text)">${n}</span> <span style="font-size:10px;padding:1px 7px;border-radius:4px;background:var(--bg3)">${i.type==='full'?'Full Day':i.type==='first'?'1st Half':'2nd Half'}</span>`);
-    el.innerHTML = `<strong style="color:var(--red)">${absentTeachers.size} absent</strong> &nbsp;${lines.join('&ensp;')}`;
-  } else { el.style.display='none'; }
+    const lines=[...absentTeachers.entries()].map(([n,i])=>`<span style="color:var(--text)">${n}</span> <span style="font-size:10px;padding:1px 7px;border-radius:4px;background:var(--bg3)">${i.type==='full'?'Full Day':i.type==='first'?'1st Half':'2nd Half'}</span>`);
+    el.innerHTML=`<strong style="color:var(--red)">${absentTeachers.size} absent</strong> &nbsp;${lines.join('&ensp;')}`;
+  }else{el.style.display='none';}
 }
-function updateFindBtn() {
-  const d=document.getElementById('sel-day').value, p=document.getElementById('sel-period').value, c=document.getElementById('sel-class').value, s=document.getElementById('sel-subject').value;
-  document.getElementById('find-btn').disabled = !(absentTeachers.size>0&&d&&p&&c&&s);
+function updateFindBtn(){
+  const d=document.getElementById('sel-day').value,p=document.getElementById('sel-period').value,c=document.getElementById('sel-class').value,s=document.getElementById('sel-subject').value;
+  document.getElementById('find-btn').disabled=!(absentTeachers.size>0&&d&&p&&c&&s);
 }
-['sel-day','sel-period','sel-class','sel-subject'].forEach(id => document.getElementById(id).addEventListener('change', updateFindBtn));
-
-function isAbsentForPeriod(name, period) {
-  if(!absentTeachers.has(name)) return false;
-  const {type} = absentTeachers.get(name);
-  if(type==='full') return true;
-  if(type==='first') return period>=1&&period<=4;
-  if(type==='second') return period>=5&&period<=8;
+['sel-day','sel-period','sel-class','sel-subject'].forEach(id=>document.getElementById(id).addEventListener('change',updateFindBtn));
+function isAbsent(name,period){
+  if(!absentTeachers.has(name))return false;
+  const{type}=absentTeachers.get(name);
+  if(type==='full')return true;
+  if(type==='first')return period>=1&&period<=4;
+  if(type==='second')return period>=5&&period<=8;
   return false;
 }
-
-window.findSubstitutes = () => {
-  const day=document.getElementById('sel-day').value, period=parseInt(document.getElementById('sel-period').value), cls=document.getElementById('sel-class').value, subject=document.getElementById('sel-subject').value;
-  const absentSlot = schoolData.teachers.filter(t=>isAbsentForPeriod(t.name,period)).map(t=>t.name);
+window.findSubstitutes=()=>{
+  const day=document.getElementById('sel-day').value,per=parseInt(document.getElementById('sel-period').value),cls=document.getElementById('sel-class').value,sub=document.getElementById('sel-subject').value;
+  const aSlot=schoolData.teachers.filter(t=>isAbsent(t.name,per)).map(t=>t.name);
   goToStep(3);
-  const leaveL = [...absentTeachers.entries()].map(([n,i])=>`${n} (${i.type==='full'?'Full Day':i.type==='first'?'1st Half':'2nd Half'})`).join(', ');
-  document.getElementById('slot-info-bar').innerHTML = `<span class="slot-tag">Day: <span>${day}</span></span><span class="slot-tag">Period: <span>${period}</span></span><span class="slot-tag">Class: <span>${cls}</span></span><span class="slot-tag">Subject: <span>${subject}</span></span><span class="slot-tag">Absent: <span style="color:var(--red)">${leaveL||'None'}</span></span>`;
-  setTimeout(() => {
-    const scored = schoolData.teachers.map(t => {
-      if(isAbsentForPeriod(t.name,period)) return null;
-      if(absentSlot.includes(t.name)) return null;
-      const w=Math.min(t.workload/20,5), sb=t.subject.toLowerCase()===subject.toLowerCase()?5:t.subject.toLowerCase().includes(subject.toLowerCase())?2.5:0;
-      return {...t, score: parseFloat(((5-w)*2+t.performance+3+sb).toFixed(2))};
+  const lL=[...absentTeachers.entries()].map(([n,i])=>`${n} (${i.type==='full'?'Full Day':i.type==='first'?'1st Half':'2nd Half'})`).join(', ');
+  document.getElementById('slot-bar').innerHTML=`<span class="slot-tag">Day: <span>${day}</span></span><span class="slot-tag">Period: <span>${per}</span></span><span class="slot-tag">Class: <span>${cls}</span></span><span class="slot-tag">Subject: <span>${sub}</span></span><span class="slot-tag">Absent: <span style="color:var(--red)">${lL||'None'}</span></span>`;
+  setTimeout(()=>{
+    const sc=schoolData.teachers.map(t=>{
+      if(isAbsent(t.name,per)||aSlot.includes(t.name))return null;
+      const w=Math.min(t.workload/20,5),sb=t.subject.toLowerCase()===sub.toLowerCase()?5:t.subject.toLowerCase().includes(sub.toLowerCase())?2.5:0;
+      return{...t,score:parseFloat(((5-w)*2+t.performance+3+sb).toFixed(2))};
     }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,3);
-    const rl=['1st','2nd','3rd'], rc=['rank-1','rank-2','rank-3'];
-    document.getElementById('results-container').innerHTML = scored.length ? `<div class="result-list">${scored.map((t,i)=>{
-      const sc=t.score>=10?'score-high':t.score>=7?'score-mid':'score-low', im=t.subject.toLowerCase()===subject.toLowerCase();
-      return `<div class="result-card"><div class="rank-badge ${rc[i]}">${rl[i]}</div><div class="result-info"><div class="result-name">${t.name}</div><div class="result-subject">${t.subject}<span class="subject-match ${im?'match-yes':'match-no'}">${im?'✓ Subject Match':'~ Near Match'}</span></div></div><div class="result-metrics"><div class="metric"><div class="metric-val ${sc}">${t.score}</div><div class="metric-label">AI Score</div></div><div class="metric"><div class="metric-val">${t.performance}</div><div class="metric-label">Rating</div></div><div class="metric"><div class="metric-val">${t.workload}</div><div class="metric-label">Workload</div></div></div></div>`;
-    }).join('')}</div>` : `<div class="empty-state"><div class="e-icon">😔</div><p>No available teachers found for this slot.</p></div>`;
-  }, 900);
+    const rl=['1st','2nd','3rd'],rc=['r1','r2','r3'];
+    document.getElementById('results-container').innerHTML=sc.length?`<div class="result-list">${sc.map((t,i)=>{
+      const s=t.score>=10?'sh':t.score>=7?'sm':'sl',im=t.subject.toLowerCase()===sub.toLowerCase();
+      return`<div class="rcard"><div class="rank-badge ${rc[i]}">${rl[i]}</div><div class="r-info"><div class="r-name">${t.name}</div><div class="r-sub">${t.subject}<span class="sm-badge ${im?'match-yes':'match-no'}">${im?'✓ Subject Match':'~ Near Match'}</span></div></div><div class="r-metrics"><div class="metric"><div class="mval ${s}">${t.score}</div><div class="mlabel">AI Score</div></div><div class="metric"><div class="mval">${t.performance}</div><div class="mlabel">Rating</div></div><div class="metric"><div class="mval">${t.workload}</div><div class="mlabel">Workload</div></div></div></div>`;
+    }).join('')}</div>`:`<div class="empty-st"><div class="ei">😔</div><p>No available teachers found for this slot.</p></div>`;
+  },900);
 };
-
-function goToStep(n) {
-  for(let i=1;i<=3;i++) {
-    const s=document.getElementById(`step-${i}`), p=document.getElementById(`panel-${i}`);
+function goToStep(n){
+  for(let i=1;i<=3;i++){
+    const s=document.getElementById(`step-${i}`),p=document.getElementById(`panel-${i}`);
     s.className='step-item'+(i===n?' active':i<n?' done':'');
     p.className='panel-section'+(i===n?' active':'');
-    s.querySelector('.step-dot').textContent = i<n?'✓':i;
+    s.querySelector('.step-dot').textContent=i<n?'✓':i;
   }
 }
-window.goToStep = goToStep;
-
-function resetSubstitution() {
+window.goToStep=goToStep;
+function resetSub(){
   absentTeachers.clear();
   ['teacher-search','sel-day','sel-period','sel-class','sel-subject'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const rc=document.getElementById('results-container');
-  if(rc)rc.innerHTML='<div class="loading-state"><div class="spinner"></div><span>Analysing and ranking teachers...</span></div>';
+  if(rc)rc.innerHTML='<div class="loading-st"><div class="spinner"></div><span>Analysing and ranking teachers...</span></div>';
   schoolData={teachers:[],classes:[],subjects:[]};
   const fsa=document.getElementById('file-success-area');if(fsa)fsa.innerHTML='';
   goToStep(1);
 }
-window.resetSubstitution = resetSubstitution;
+window.resetSub=resetSub;
 
-// File upload for substitution
-const ua = document.getElementById('upload-area');
-ua.addEventListener('dragover', e=>{e.preventDefault();ua.classList.add('dragover');});
-ua.addEventListener('dragleave', ()=>ua.classList.remove('dragover'));
-ua.addEventListener('drop', e=>{e.preventDefault();ua.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)handleTimetableFile(f);});
-document.getElementById('file-input').addEventListener('change', e=>{if(e.target.files[0])handleTimetableFile(e.target.files[0]);});
-
-async function handleTimetableFile(file) {
+// Timetable file upload
+const ua=document.getElementById('upload-area');
+ua.addEventListener('dragover',e=>{e.preventDefault();ua.classList.add('dragover');});
+ua.addEventListener('dragleave',()=>ua.classList.remove('dragover'));
+ua.addEventListener('drop',e=>{e.preventDefault();ua.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)handleTTFile(f);});
+document.getElementById('file-input').addEventListener('change',e=>{if(e.target.files[0])handleTTFile(e.target.files[0]);});
+async function handleTTFile(file){
   const ext=file.name.split('.').pop().toLowerCase();
   if(!['csv','xlsx','xls'].includes(ext)){showToast('Only CSV or Excel files are supported.','error');return;}
-  document.getElementById('file-success-area').innerHTML=`<div class="file-success-bar" style="border-color:#f0a50033;background:#f0a50011;"><div class="icon">⏳</div><div><p>${file.name}</p><small id="upload-status">Connecting to server...</small></div></div>`;
-  try{await wakeUpBackend();}catch(e){}
-  const el=document.getElementById('upload-status');
+  document.getElementById('file-success-area').innerHTML=`<div class="fs-bar" style="border-color:#f0a50033;background:#f0a50011;"><div class="icon">⏳</div><div><p>${file.name}</p><small id="up-status">Connecting to server...</small></div></div>`;
+  try{await wakeUp();}catch(e){}
+  const el=document.getElementById('up-status');
   if(el)el.textContent=`${(file.size/1024).toFixed(1)} KB — Uploading...`;
   const fd=new FormData(); fd.append('school_name','My School'); fd.append('file',file);
   try{
     const res=await fetch(`${API_URL}/upload`,{method:'POST',body:fd});
     const data=await res.json();
     if(data.school_id){
-      const [teachers,classes,subjects]=await Promise.all([
+      const[t,c,s]=await Promise.all([
         fetch(`${API_URL}/teachers/${data.school_id}`).then(r=>r.json()),
         fetch(`${API_URL}/classes/${data.school_id}`).then(r=>r.json()),
         fetch(`${API_URL}/subjects/${data.school_id}`).then(r=>r.json()),
       ]);
-      schoolData={teachers,classes,subjects,school_id:data.school_id};
-      document.getElementById('file-success-area').innerHTML=`<div class="file-success-bar"><div class="icon">✅</div><div><p>${file.name}</p><small>${teachers.length} teachers · ${classes.length} classes loaded</small></div></div>`;
-      afterDataLoaded(); showToast(`✓ ${teachers.length} teachers loaded successfully.`,'success');
+      schoolData={teachers:t,classes:c,subjects:s,school_id:data.school_id};
+      document.getElementById('file-success-area').innerHTML=`<div class="fs-bar"><div class="icon">✅</div><div><p>${file.name}</p><small>${t.length} teachers · ${c.length} classes loaded</small></div></div>`;
+      afterDataLoaded(); showToast(`✓ ${t.length} teachers loaded.`,'success');
     }else{showToast('Upload failed: '+(data.error||'Unknown error'),'error');}
   }catch{
-    document.getElementById('file-success-area').innerHTML=`<div class="file-success-bar" style="border-color:#e0555533;background:#e0555511;"><div class="icon">❌</div><div><p>Upload failed</p><small>Please check your connection and try again.</small></div></div>`;
+    document.getElementById('file-success-area').innerHTML=`<div class="fs-bar" style="border-color:#e0555533;background:#e0555511;"><div class="icon">❌</div><div><p>Upload failed</p><small>Please check your connection and try again.</small></div></div>`;
     showToast('Upload failed. Please try again.','error');
   }
 }
-async function wakeUpBackend(ms=30000){
-  const start=Date.now();
-  while(Date.now()-start<ms){
+async function wakeUp(ms=30000){
+  const s=Date.now();
+  while(Date.now()-s<ms){
     try{const r=await fetch(`${API_URL}/`,{signal:AbortSignal.timeout(5000)});if(r.ok)return true;}catch(e){}
     await new Promise(r=>setTimeout(r,2000));
   }
   throw new Error('timeout');
 }
 
-/* ── Test Paper (Teacher) ── */
-window.selectMarks = (v,btn) => {document.querySelectorAll('.mark-btn:not(.q-btn)').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');document.getElementById('tp-custom-marks').value='';selectedMarks=v;};
-window.selectCustomMarks = (v) => {document.querySelectorAll('.mark-btn:not(.q-btn)').forEach(b=>b.classList.remove('selected'));selectedMarks=parseInt(v)||null;};
-window.selectQuestions = (v,btn) => {document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');document.getElementById('tp-custom-questions').value='';selectedQuestions=v;};
-window.selectCustomQuestions = (v) => {document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('selected'));selectedQuestions=parseInt(v)||null;};
-window.selectType = (t,el) => {document.querySelectorAll('#screen-testpaper .q-type-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedType=t;document.getElementById('mix-config').classList.toggle('visible',t==='mix');};
-window.selectDifficulty = (l,el) => {document.querySelectorAll('#screen-testpaper .diff-option').forEach(o=>o.classList.remove('sel-easy','sel-medium','sel-hard'));el.classList.add('sel-'+l);selectedDifficulty=l;};
-window.onTpSyllabusFile = (inp) => {if(inp.files[0]){tpSyllabusFile=inp.files[0];document.getElementById('tp-syllabus-label').textContent='✅ '+inp.files[0].name;document.getElementById('tp-syllabus-upload').style.borderColor='var(--green)';}};
+/* ── PAPER GENERATION (shared) ── */
+window.selMarks=(v,btn)=>{document.querySelectorAll('#screen-testpaper .mbtn:not(.qbtn)').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');document.getElementById('tp-marks-custom').value='';selM=v;};
+window.selCustomMarks=(v)=>{document.querySelectorAll('#screen-testpaper .mbtn:not(.qbtn)').forEach(b=>b.classList.remove('selected'));selM=parseInt(v)||null;};
+window.selQuestions=(v,btn)=>{document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');document.getElementById('tp-q-custom').value='';selQ=v;};
+window.selCustomQuestions=(v)=>{document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('selected'));selQ=parseInt(v)||null;};
+window.selSpMarks=(v,btn)=>{document.querySelectorAll('.spmbtn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');selSpM=v;};
+window.selType=(t,el,pfx)=>{
+  document.querySelectorAll(`#screen-${pfx==='tp'?'testpaper':'samplepaper'} .qt-opt`).forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  if(pfx==='tp'){selT=t;const mc=document.getElementById('tp-mix-cfg');if(mc)mc.classList.toggle('visible',t==='mix');}
+  else{selSpT=t;}
+};
+window.selDiff=(l,el,pfx)=>{
+  const scr=pfx==='tp'?'testpaper':'samplepaper';
+  document.querySelectorAll(`#screen-${scr} .dopt`).forEach(o=>o.classList.remove('sel-easy','sel-medium','sel-hard'));
+  el.classList.add('sel-'+l);
+  if(pfx==='tp')selD=l; else selSpD=l;
+};
+window.onTpFile=(inp)=>{if(inp.files[0]){tpFile=inp.files[0];document.getElementById('tp-syl-label').textContent='✅ '+inp.files[0].name;document.getElementById('tp-syl-upload').style.borderColor='var(--green)';}};
+window.onSpFile=(inp)=>{if(inp.files[0]){spFile=inp.files[0];document.getElementById('sp-file-label').textContent='✅ '+inp.files[0].name;document.getElementById('sp-upload').style.borderColor='var(--green)';}};
 
-window.generateTestPaper = async () => {
-  const sub=document.getElementById('tp-subject').value, cls=document.getElementById('tp-class').value, syl=document.getElementById('tp-syllabus').value.trim();
+window.generatePaper=async(mode)=>{
+  const isTP=mode==='test';
+  const sub=document.getElementById(isTP?'tp-subject':'sp-subject').value;
+  const cls=document.getElementById(isTP?'tp-class':'sp-class').value;
+  const syl=document.getElementById(isTP?'tp-syllabus':'sp-syllabus').value.trim();
+  const marks=isTP?selM:selSpM;
+  const type=isTP?selT:selSpT;
+  const diff=isTP?selD:selSpD;
+  const file=isTP?tpFile:spFile;
   if(!sub){showToast('Please select a subject.','error');return;}
   if(!cls){showToast('Please select a class.','error');return;}
-  if(!syl&&!tpSyllabusFile){showToast('Please enter topics or upload a syllabus file.','error');return;}
-  if(!selectedMarks){showToast('Please select total marks.','error');return;}
-  if(!selectedType){showToast('Please select a question type.','error');return;}
-  if(!selectedDifficulty){showToast('Please select a difficulty level.','error');return;}
-  document.getElementById('tp-placeholder').style.display='none';
-  document.getElementById('paper-output').classList.remove('visible');
-  document.getElementById('tp-loading').style.display='block';
-  let typeDesc=selectedType;
-  if(selectedType==='mix'){typeDesc=`mix (${document.getElementById('mix-obj').value}% objective, ${document.getElementById('mix-sub').value}% subjective)`;}
-  const nq=selectedQuestions?`\n- Number of Questions: exactly ${selectedQuestions}`:'';
-  const diff=selectedDifficulty==='easy'?'Easy — basic recall and definitions':selectedDifficulty==='medium'?'Medium — application and understanding':'Hard — analysis, evaluation, and higher order thinking';
-  const prompt=`You are an expert Indian school teacher. Create a professional test paper.\n\n- Subject: ${sub}\n- Class: ${cls}\n- Total Marks: ${selectedMarks}\n- Question Type: ${typeDesc}${nq}\n- Difficulty: ${diff}\n- Syllabus: ${syl||'(see uploaded file)'}\n\nReturn ONLY valid JSON:\n{"title":"string","sections":[{"title":"string","questions":[{"num":1,"text":"string","marks":1,"type":"mcq|short|long","options":["A) ...","B) ...","C) ...","D) ..."]}]}]}\nTotal marks MUST equal ${selectedMarks}.`;
+  if(!syl&&!file){showToast('Please enter topics or upload a syllabus file.','error');return;}
+  if(!marks){showToast('Please select total marks.','error');return;}
+  if(!type){showToast('Please select a question type.','error');return;}
+  if(!diff){showToast('Please select a difficulty level.','error');return;}
+  const phId=isTP?'tp-ph':'sp-ph', outId=isTP?'tp-out':'sp-out', loadId=isTP?'tp-loading':'sp-loading';
+  document.getElementById(phId).style.display='none';
+  document.getElementById(outId).classList.remove('visible');
+  document.getElementById(loadId).style.display='block';
+  let td=type;
+  if(type==='mix'&&isTP){td=`mix (${document.getElementById('tp-mix-obj').value}% objective, ${document.getElementById('tp-mix-sub').value}% subjective)`;}
+  const nq=isTP&&selQ?`\n- Number of Questions: exactly ${selQ}`:'';
+  const dDesc=diff==='easy'?'Easy — basic recall and definitions':diff==='medium'?'Medium — application and understanding':'Hard — analysis, evaluation, higher order thinking';
+  const prompt=`You are an expert Indian school teacher. Create a professional ${isTP?'test':'sample practice'} paper.\n\n- Subject: ${sub}\n- Class: ${cls}\n- Total Marks: ${marks}\n- Question Type: ${td}${nq}\n- Difficulty: ${dDesc}\n- Syllabus: ${syl||'(see uploaded file)'}\n\nReturn ONLY valid JSON:\n{"title":"string","sections":[{"title":"string","questions":[{"num":1,"text":"string","marks":1,"type":"mcq|short|long","options":["A) ...","B) ...","C) ...","D) ..."]}]}]}\nTotal marks MUST equal ${marks}.`;
   try{
     const fd=new FormData(); fd.append('prompt',prompt);
-    if(tpSyllabusFile) fd.append('syllabus_file',tpSyllabusFile);
+    if(file)fd.append('syllabus_file',file);
     const res=await fetch(`${API_URL}/generate_test`,{method:'POST',body:fd});
     const data=await res.json();
-    if(data.error){showToast('Generation failed: '+data.error,'error');document.getElementById('tp-loading').style.display='none';document.getElementById('tp-placeholder').style.display='block';return;}
-    lastTestPaperData={sub,cls,marks:selectedMarks,type:selectedType,diff:selectedDifficulty,paper:data.paper};
-    renderPaper(data.paper,sub,cls,selectedMarks,selectedDifficulty,'po-title','po-meta','po-content','paper-output','tp-loading','tp-placeholder');
-  }catch{showToast('Generation failed. Please try again.','error');document.getElementById('tp-loading').style.display='none';document.getElementById('tp-placeholder').style.display='block';}
+    if(data.error){showToast('Generation failed: '+data.error,'error');document.getElementById(loadId).style.display='none';document.getElementById(phId).style.display='block';return;}
+    const pData={sub,cls,marks,type,diff,paper:data.paper};
+    if(isTP)lastTpData=pData; else lastSpData=pData;
+    renderPaper(pData,isTP?'tp-out-title':'sp-out-title',isTP?'tp-out-meta':'sp-out-meta',isTP?'tp-out-content':'sp-out-content',outId,loadId,phId);
+  }catch{showToast('Generation failed. Please try again.','error');document.getElementById(loadId).style.display='none';document.getElementById(phId).style.display='block';}
 };
 
-function renderPaper(paper,sub,cls,marks,diff,titleId,metaId,contentId,outputId,loadId,phId){
+function renderPaper(d,titleId,metaId,contentId,outId,loadId,phId){
   document.getElementById(loadId).style.display='none';
-  document.getElementById(titleId).textContent=paper.title||`${sub} Test Paper`;
-  const diffBadge=diff==='easy'?'🟢 Easy':diff==='medium'?'🟡 Medium':'🔴 Hard';
-  document.getElementById(metaId).innerHTML=`<span>📚 ${sub}</span><span>🎓 ${cls}</span><span>📊 ${marks} Marks</span><span>⏱ ${Math.max(30,marks*1.5)} mins</span><span>${diffBadge}</span>`;
+  document.getElementById(titleId).textContent=d.paper.title||`${d.sub} Paper`;
+  const db=d.diff==='easy'?'🟢 Easy':d.diff==='medium'?'🟡 Medium':'🔴 Hard';
+  document.getElementById(metaId).innerHTML=`<span>📚 ${d.sub}</span><span>🎓 ${d.cls}</span><span>📊 ${d.marks} Marks</span><span>⏱ ${Math.max(30,d.marks*1.5)} mins</span><span>${db}</span>`;
   let html='';
-  (paper.sections||[]).forEach(s=>{
-    html+=`<div class="paper-section"><div class="paper-section-title">${s.title}</div>`;
+  (d.paper.sections||[]).forEach(s=>{
+    html+=`<div class="p-section"><div class="ps-title">${s.title}</div>`;
     (s.questions||[]).forEach((q,i)=>{
-      html+=`<div class="question-item"><span class="q-num">Q${q.num||i+1}.</span><div style="flex:1"><div class="q-text">${q.text}</div>`;
-      if(q.options&&q.options.length) html+=`<div class="mcq-options">${q.options.map(o=>`<div class="mcq-option">${o}</div>`).join('')}</div>`;
-      if(q.type==='short') html+=`<div style="margin-top:8px;height:40px;border-bottom:1px dashed var(--border2)"></div>`;
-      if(q.type==='long') html+=`<div style="margin-top:8px;height:80px;border-bottom:1px dashed var(--border2)"></div>`;
+      html+=`<div class="q-item"><span class="q-num">Q${q.num||i+1}.</span><div style="flex:1"><div class="q-txt">${q.text}</div>`;
+      if(q.options&&q.options.length)html+=`<div class="mcq-opts">${q.options.map(o=>`<div class="mcq-opt">${o}</div>`).join('')}</div>`;
+      if(q.type==='short')html+=`<div style="margin-top:8px;height:40px;border-bottom:1px dashed var(--border2)"></div>`;
+      if(q.type==='long')html+=`<div style="margin-top:8px;height:80px;border-bottom:1px dashed var(--border2)"></div>`;
       html+=`</div><span class="q-marks">[${q.marks} mark${q.marks>1?'s':''}]</span></div>`;
     });
     html+='</div>';
   });
   document.getElementById(contentId).innerHTML=html;
-  document.getElementById(outputId).classList.add('visible');
-  showToast('✓ Test paper generated successfully.','success');
+  document.getElementById(outId).classList.add('visible');
+  showToast('✓ Paper generated successfully.','success');
 }
 
-window.downloadTestPDF = () => { if(lastTestPaperData) downloadPaperPDF(lastTestPaperData); };
-
-function downloadPaperPDF(data){
+window.dlPDF=(mode)=>{
+  const d=mode==='test'?lastTpData:lastSpData;
+  if(!d)return;
   const w=window.open('','_blank');
-  const diff=data.diff==='easy'?'Easy':data.diff==='medium'?'Medium':'Hard';
-  let h=`<html><head><title>${data.sub} Test Paper</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#000}h1{text-align:center;font-size:22px;margin-bottom:4px}h2{font-size:14px;margin:20px 0 10px;border-bottom:1px solid #ccc;padding-bottom:4px}.meta{text-align:center;font-size:13px;color:#555;margin-bottom:24px}.q{margin-bottom:16px;font-size:14px;line-height:1.6}.opts{margin:6px 0 0 20px;color:#444;font-size:13px}</style></head><body>`;
-  h+=`<h1>${data.paper.title||data.sub+' Test Paper'}</h1><div class="meta">${data.cls} | ${data.sub} | ${data.marks} Marks | Difficulty: ${diff} | Time: ${Math.max(30,data.marks*1.5)} mins</div>`;
-  (data.paper.sections||[]).forEach(s=>{
+  const diff=d.diff==='easy'?'Easy':d.diff==='medium'?'Medium':'Hard';
+  let h=`<html><head><title>${d.sub} Paper</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#000}h1{text-align:center;font-size:22px}h2{font-size:14px;margin:20px 0 10px;border-bottom:1px solid #ccc;padding-bottom:4px}.meta{text-align:center;font-size:13px;color:#555;margin-bottom:24px}.q{margin-bottom:16px;font-size:14px;line-height:1.6}.opts{margin:6px 0 0 20px;color:#444;font-size:13px}</style></head><body>`;
+  h+=`<h1>${d.paper.title||d.sub+' Paper'}</h1><div class="meta">${d.cls} | ${d.sub} | ${d.marks} Marks | Difficulty: ${diff} | Time: ${Math.max(30,d.marks*1.5)} mins</div>`;
+  (d.paper.sections||[]).forEach(s=>{
     h+=`<h2>${s.title}</h2>`;
     (s.questions||[]).forEach((q,i)=>{
       h+=`<div class="q"><b>Q${q.num||i+1}.</b> ${q.text} <small style="color:#777">[${q.marks} mark${q.marks>1?'s':''}]</small>`;
-      if(q.options) h+=`<div class="opts">${q.options.map(o=>`<div>${o}</div>`).join('')}</div>`;
+      if(q.options)h+=`<div class="opts">${q.options.map(o=>`<div>${o}</div>`).join('')}</div>`;
       h+='</div>';
     });
   });
   h+='</body></html>';
   w.document.write(h); w.document.close(); w.print();
   showToast('✓ PDF download initiated.','success');
-}
-
-/* ── Sample Paper (Student) ── */
-window.selectSpMarks = (v,btn) => {document.querySelectorAll('#screen-samplepaper .mark-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');selectedSpMarks=v;};
-window.selectSpType = (t,el) => {document.querySelectorAll('#screen-samplepaper .q-type-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedSpType=t;};
-window.selectSpDifficulty = (l,el) => {document.querySelectorAll('#screen-samplepaper .diff-option').forEach(o=>o.classList.remove('sel-easy','sel-medium','sel-hard'));el.classList.add('sel-'+l);selectedSpDifficulty=l;};
-window.onSpFile = (inp) => {if(inp.files[0]){spFile=inp.files[0];document.getElementById('sp-file-label').textContent='✅ '+inp.files[0].name;document.getElementById('sp-upload').style.borderColor='var(--green)';}};
-
-window.generateSamplePaper = async () => {
-  const sub=document.getElementById('sp-subject').value, cls=document.getElementById('sp-class').value, syl=document.getElementById('sp-syllabus').value.trim();
-  if(!sub){showToast('Please select a subject.','error');return;}
-  if(!cls){showToast('Please select a class.','error');return;}
-  if(!syl&&!spFile){showToast('Please enter topics or upload a file.','error');return;}
-  if(!selectedSpMarks){showToast('Please select total marks.','error');return;}
-  if(!selectedSpType){showToast('Please select a question type.','error');return;}
-  if(!selectedSpDifficulty){showToast('Please select a difficulty level.','error');return;}
-  document.getElementById('sp-placeholder').style.display='none';
-  document.getElementById('sp-output').classList.remove('visible');
-  document.getElementById('sp-loading').style.display='block';
-  const diff=selectedSpDifficulty==='easy'?'Easy — basic recall':selectedSpDifficulty==='medium'?'Medium — application':'Hard — analysis and higher order thinking';
-  const prompt=`You are an expert Indian school teacher. Create a sample practice paper for students.\n\n- Subject: ${sub}\n- Class: ${cls}\n- Total Marks: ${selectedSpMarks}\n- Question Type: ${selectedSpType}\n- Difficulty: ${diff}\n- Topics: ${syl||'(see uploaded file)'}\n\nReturn ONLY valid JSON:\n{"title":"string","sections":[{"title":"string","questions":[{"num":1,"text":"string","marks":1,"type":"mcq|short|long","options":["A) ...","B) ...","C) ...","D) ..."]}]}]}\nTotal marks MUST equal ${selectedSpMarks}.`;
-  try{
-    const fd=new FormData(); fd.append('prompt',prompt);
-    if(spFile) fd.append('syllabus_file',spFile);
-    const res=await fetch(`${API_URL}/generate_test`,{method:'POST',body:fd});
-    const data=await res.json();
-    if(data.error){showToast('Generation failed: '+data.error,'error');document.getElementById('sp-loading').style.display='none';document.getElementById('sp-placeholder').style.display='block';return;}
-    lastSpData={sub,cls,marks:selectedSpMarks,type:selectedSpType,diff:selectedSpDifficulty,paper:data.paper};
-    renderPaper(data.paper,sub,cls,selectedSpMarks,selectedSpDifficulty,'sp-po-title','sp-po-meta','sp-po-content','sp-output','sp-loading','sp-placeholder');
-  }catch{showToast('Generation failed. Please try again.','error');document.getElementById('sp-loading').style.display='none';document.getElementById('sp-placeholder').style.display='block';}
 };
-window.downloadSpPDF = () => { if(lastSpData) downloadPaperPDF(lastSpData); };
 
-/* ── Notes Generator (Student) ── */
-window.selectNotesStyle = (style,el) => {document.querySelectorAll('#screen-notes .q-type-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedNotesStyle=style;};
-window.onNotesFile = (inp) => {if(inp.files[0]){notesFile=inp.files[0];document.getElementById('notes-file-label').textContent='✅ '+inp.files[0].name;document.getElementById('notes-upload').style.borderColor='var(--amber)';}};
-
-window.generateNotes = async () => {
+/* Notes */
+window.selNotesStyle=(s,el)=>{document.querySelectorAll('#screen-notes .qt-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selNS=s;};
+window.onNotesFile=(inp)=>{if(inp.files[0]){notesFile=inp.files[0];document.getElementById('notes-file-label').textContent='✅ '+inp.files[0].name;document.getElementById('notes-upload').style.borderColor='var(--amber)';}};
+window.generateNotes=async()=>{
   const cls=document.getElementById('notes-class').value, sub=document.getElementById('notes-subject').value, topic=document.getElementById('notes-topic').value.trim();
   if(!cls){showToast('Please select your class.','error');return;}
   if(!sub){showToast('Please select a subject.','error');return;}
   if(!topic&&!notesFile){showToast('Please enter a topic or upload a file.','error');return;}
-  if(!selectedNotesStyle){showToast('Please select a notes style.','error');return;}
-  document.getElementById('notes-placeholder').style.display='none';
-  document.getElementById('notes-output').classList.remove('visible');
+  if(!selNS){showToast('Please select a notes style.','error');return;}
+  document.getElementById('notes-ph').style.display='none';
+  document.getElementById('notes-out').classList.remove('visible');
   document.getElementById('notes-loading').style.display='block';
-  const styleDesc=selectedNotesStyle==='concise'?'Concise — key points, definitions, and important facts only. Use bullet points and short sentences.':selectedNotesStyle==='detailed'?'Detailed — comprehensive coverage with explanations, examples, and in-depth analysis.':'Exam Ready — focus on most likely exam questions, important formulas, diagrams descriptions, and quick revision points.';
-  const prompt=`You are an expert educator creating study notes for Indian school students.\n\nCreate comprehensive study notes:\n- Class: ${cls}\n- Subject: ${sub}\n- Topic: ${topic||'(see uploaded file)'}\n- Style: ${styleDesc}\n\nFormat the notes in clear HTML using these tags only: <h2> for main sections, <h3> for sub-sections, <p> for paragraphs, <ul><li> for bullet points, <ol><li> for numbered lists, <strong> for important terms.\n\nMake the notes educational, accurate, and student-friendly. Include:\n1. Overview / Introduction\n2. Key Concepts & Definitions\n3. Important Points\n4. Examples (where applicable)\n5. Summary / Quick Revision\n\nReturn ONLY the HTML content, no markdown, no code blocks.`;
+  const sd=selNS==='concise'?'Concise — key points, definitions and important facts only. Use bullet points and short sentences.':selNS==='detailed'?'Detailed — comprehensive coverage with explanations, examples and in-depth analysis.':'Exam Ready — focus on most likely exam questions, important formulas, and quick revision points.';
+  const prompt=`You are an expert educator creating study notes for Indian school students.\n\nCreate comprehensive study notes:\n- Class: ${cls}\n- Subject: ${sub}\n- Topic: ${topic||'(see uploaded file)'}\n- Style: ${sd}\n\nFormat using HTML tags only: <h2> for main sections, <h3> for sub-sections, <p> for paragraphs, <ul><li> for bullets, <strong> for key terms.\n\nInclude: Overview, Key Concepts, Important Points, Examples, Summary.\n\nReturn ONLY the HTML content, no markdown, no code blocks.`;
   try{
     const fd=new FormData(); fd.append('prompt',prompt);
-    if(notesFile) fd.append('syllabus_file',notesFile);
+    if(notesFile)fd.append('syllabus_file',notesFile);
     const res=await fetch(`${API_URL}/generate_test`,{method:'POST',body:fd});
     const data=await res.json();
-    if(data.error){showToast('Generation failed: '+data.error,'error');document.getElementById('notes-loading').style.display='none';document.getElementById('notes-placeholder').style.display='block';return;}
-    lastNotesData={cls,sub,topic,style:selectedNotesStyle};
-    const notesHtml=typeof data.paper==='string'?data.paper:(data.paper&&data.paper.content)?data.paper.content:JSON.stringify(data.paper);
+    if(data.error){showToast('Generation failed: '+data.error,'error');document.getElementById('notes-loading').style.display='none';document.getElementById('notes-ph').style.display='block';return;}
+    lastNotesData={cls,sub,topic,style:selNS};
+    const html=typeof data.paper==='string'?data.paper:(data.paper&&data.paper.content)?data.paper.content:JSON.stringify(data.paper);
     document.getElementById('notes-loading').style.display='none';
-    document.getElementById('notes-title-display').textContent=`${sub} — Study Notes`;
-    const styleLabel=selectedNotesStyle==='concise'?'⚡ Concise':selectedNotesStyle==='detailed'?'📖 Detailed':'🎯 Exam Ready';
-    document.getElementById('notes-meta-display').innerHTML=`<span>📚 ${sub}</span><span>🎓 ${cls}</span><span>${styleLabel}</span>`;
-    document.getElementById('notes-content-display').innerHTML=notesHtml;
-    document.getElementById('notes-output').classList.add('visible');
+    document.getElementById('notes-out-title').textContent=`${sub} — Study Notes`;
+    const sl=selNS==='concise'?'⚡ Concise':selNS==='detailed'?'📖 Detailed':'🎯 Exam Ready';
+    document.getElementById('notes-out-meta').innerHTML=`<span>📚 ${sub}</span><span>🎓 ${cls}</span><span>${sl}</span>`;
+    document.getElementById('notes-out-content').innerHTML=html;
+    document.getElementById('notes-out').classList.add('visible');
     showToast('✓ Study notes generated successfully.','success');
-  }catch{showToast('Generation failed. Please try again.','error');document.getElementById('notes-loading').style.display='none';document.getElementById('notes-placeholder').style.display='block';}
+  }catch{showToast('Generation failed. Please try again.','error');document.getElementById('notes-loading').style.display='none';document.getElementById('notes-ph').style.display='block';}
 };
-
-window.downloadNotesPDF = () => {
-  if(!lastNotesData) return;
+window.dlNotesPDF=()=>{
+  if(!lastNotesData)return;
   const w=window.open('','_blank');
-  const content=document.getElementById('notes-content-display').innerHTML;
+  const content=document.getElementById('notes-out-content').innerHTML;
   const h=`<html><head><title>${lastNotesData.sub} Study Notes</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#000;line-height:1.7}h1{text-align:center;font-size:22px;margin-bottom:8px}h2{font-size:18px;margin:24px 0 10px;color:#1a1a2e;border-bottom:2px solid #4f8eff;padding-bottom:4px}h3{font-size:15px;margin:16px 0 8px;color:#333}.meta{text-align:center;font-size:13px;color:#555;margin-bottom:28px}p{margin-bottom:10px}ul,ol{margin:8px 0 12px 24px}li{margin-bottom:4px}strong{color:#1a1a2e}</style></head><body><h1>${lastNotesData.sub} — Study Notes</h1><div class="meta">${lastNotesData.cls} | ${lastNotesData.topic||'Uploaded File'}</div>${content}</body></html>`;
   w.document.write(h); w.document.close(); w.print();
   showToast('✓ PDF download initiated.','success');
 };
 
-/* ── Toast ── */
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
-  setTimeout(() => t.className = `toast ${type}`, 3500);
+/* Toast */
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.className=`toast ${type}`,3500);
 }
-window.showToast = showToast;
+window.showToast=showToast;
 </script>
 </body>
 </html>
