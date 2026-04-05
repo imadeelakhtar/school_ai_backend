@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saksham AI — AI Platform for Smart Teachers</title>
+<title>Saksham AI — Intelligent Platform for Educators</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
 .water-drop{position:fixed;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;pointer-events:none;z-index:0;opacity:0.07;animation:floatDrop 8s ease-in-out infinite;background:linear-gradient(135deg,#4f8eff,#7b5ea7);filter:blur(2px);}
@@ -286,7 +286,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
       </svg>
       <div>
         <div class="auth-logo-text">Saksham <span>AI</span></div>
-        <div style="font-size:11px;color:var(--muted);letter-spacing:0.5px">AI Platform for Smart Teachers</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:0.5px">Intelligent Platform for Educators</div>
       </div>
     </div>
 
@@ -298,11 +298,11 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
     <!-- LOGIN -->
     <div class="auth-form active" id="form-login">
       <div class="auth-title">Welcome Back</div>
-      <div class="auth-subtitle">Sign in to access your dashboard</div>
+      <div class="auth-subtitle">Please sign in to access your dashboard.</div>
       <div id="login-error" class="auth-error"></div>
       <div style="display:flex;gap:8px;margin-bottom:20px;background:var(--bg3);border-radius:10px;padding:4px;">
-        <button id="choice-email-btn" onclick="switchLoginChoice('email')" style="flex:1;padding:9px;border-radius:8px;border:1px solid var(--border2);background:var(--card);color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">📧 Email</button>
-        <button id="choice-id-btn" onclick="switchLoginChoice('schoolid')" style="flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">🪪 School ID</button>
+        <button id="choice-email-btn" onclick="switchLoginChoice('email')" style="flex:1;padding:9px;border-radius:8px;border:1px solid var(--border2);background:var(--card);color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">Email</button>
+        <button id="choice-id-btn" onclick="switchLoginChoice('schoolid')" style="flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">School ID</button>
       </div>
       <div id="login-email-fields">
         <div class="field-group"><label>Email Address</label><input type="email" class="field-input" id="login-email" placeholder="teacher@school.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
@@ -317,12 +317,13 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
     <!-- REGISTER -->
     <div class="auth-form" id="form-register">
       <div class="auth-title">Create Account</div>
-      <div class="auth-subtitle">Register to get started with Saksham AI</div>
+      <div class="auth-subtitle">Register to begin using Saksham AI.</div>
       <div id="register-error" class="auth-error"></div>
       <div class="field-group"><label>Full Name</label><input type="text" class="field-input" id="reg-name" placeholder="e.g. Ramesh Kumar"></div>
       <div class="field-group"><label>Email Address</label><input type="email" class="field-input" id="reg-email" placeholder="teacher@school.com"></div>
       <div class="field-group"><label>School ID</label><input type="text" class="field-input" id="reg-uid" placeholder="e.g. SCH-2024-XXXXX"></div>
-      <div class="field-group"><label>Password</label><input type="password" class="field-input" id="reg-password" placeholder="Minimum 6 characters"></div>
+      <div class="field-group"><label>Password</label><input type="password" class="field-input" id="reg-password" placeholder="Minimum 6 characters" autocomplete="new-password"></div>
+      <div class="field-group"><label>Confirm Password</label><input type="password" class="field-input" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password"></div>
       <button class="auth-btn" onclick="doRegister()" id="register-btn">Create Account →</button>
     </div>
   </div>
@@ -343,7 +344,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
       </svg>
       <div class="logo-text-group">
         <div class="logo-name">Saksham <span>AI</span></div>
-        <div class="logo-tagline">AI Platform for Smart Teachers</div>
+        <div class="logo-tagline">Intelligent Platform for Educators</div>
       </div>
     </div>
     <div class="header-right">
@@ -358,17 +359,17 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
   <main>
     <div id="dashboard-screen">
       <div class="hero">
-        <div class="hero-tag"><span>⚡</span> Delhi Govt Schools</div>
-        <h1>AI Platform for<br>Smart Teachers</h1>
-        <p>Apna feature choose karo — AI se sab kuch aasaan ho jaayega.</p>
+        <div class="hero-tag"><span>⚡</span> Delhi Government Schools</div>
+        <h1>Intelligent Platform for<br>Educators</h1>
+        <p>Select a module below to streamline planning and assessment with artificial intelligence.</p>
       </div>
       <div class="dashboard-grid">
         <div class="dash-box dash-box-1" onclick="openFeature('substitution')">
           <div class="dash-box-tag">AI Powered</div>
           <div class="dash-box-icon">👨‍🏫</div>
           <div class="dash-box-content">
-            <div class="dash-box-title">Teacher Substitution</div>
-            <div class="dash-box-desc">Absent teachers ke liye AI automatically best substitute dhundh ke deta hai — workload, subject match aur performance ke basis pe.</div>
+            <div class="dash-box-title">Teacher's Leave Arrangement</div>
+            <div class="dash-box-desc">Identify suitable cover teachers when colleagues are absent, using workload, subject alignment, and performance indicators.</div>
           </div>
           <div class="dash-box-arrow">→</div>
         </div>
@@ -377,7 +378,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
           <div class="dash-box-icon">📝</div>
           <div class="dash-box-content">
             <div class="dash-box-title">Test Paper Generator</div>
-            <div class="dash-box-desc">Syllabus daalo, marks aur type choose karo — AI ek dum professional test paper bana deta hai. PDF mein download bhi kar sakte ho.</div>
+            <div class="dash-box-desc">Enter your syllabus, assessment parameters, and language. The system produces a structured test paper and supports export to PDF.</div>
           </div>
           <div class="dash-box-arrow">→</div>
         </div>
@@ -398,14 +399,14 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
         <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
           <div class="upload-icon">📊</div>
-          <h3>Drop your timetable here</h3>
-          <p>or click to browse files</p>
+          <h3>Upload your timetable</h3>
+          <p>Drag and drop a file here, or click to browse.</p>
           <div class="upload-formats"><span class="format-badge">CSV</span><span class="format-badge">XLSX</span><span class="format-badge">XLS</span></div>
         </div>
         <div id="file-success-area"></div>
         <div style="margin-top:20px;text-align:center">
-          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">— or use demo data —</p>
-          <button class="btn btn-ghost" onclick="loadDemoData()">Load Demo School Data</button>
+          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">— or use demonstration data —</p>
+          <button class="btn btn-ghost" onclick="loadDemoData()">Load demonstration data</button>
         </div>
       </div>
       <div class="panel" id="panel-2">
@@ -418,7 +419,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
         <div class="two-col">
           <div class="card">
             <div class="card-title">Select Absent Teachers</div>
-            <input type="text" placeholder="Search teacher..." style="width:100%;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:12px" oninput="filterTeachers(this.value)" id="teacher-search">
+            <input type="text" placeholder="Search by name or subject…" style="width:100%;padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:12px" oninput="filterTeachers(this.value)" id="teacher-search">
             <div class="teacher-list" id="teacher-list"></div>
             <div class="divider"></div>
             <div id="absent-summary" class="absent-summary"></div>
@@ -437,13 +438,13 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
       </div>
       <div class="panel" id="panel-3">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-          <div><h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px">Top Substitutes</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Ranked by AI score</p></div>
+          <div><h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px">Recommended cover teachers</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Ranked by composite score</p></div>
           <button class="btn btn-ghost" onclick="goBack()">← Back</button>
         </div>
         <div id="slot-info-bar" class="slot-info"></div>
-        <div id="results-container"><div class="loading"><div class="spinner"></div><span>Finding best substitutes...</span></div></div>
+        <div id="results-container"><div class="loading"><div class="spinner"></div><span>Identifying suitable cover teachers…</span></div></div>
         <div class="divider"></div>
-        <div style="text-align:center"><button class="btn btn-ghost" onclick="resetAll()">↺ New Allocation</button></div>
+        <div style="text-align:center"><button class="btn btn-ghost" onclick="resetAll()">↺ New arrangement</button></div>
       </div>
     </div>
 
@@ -453,9 +454,15 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
       <div class="two-col">
         <div>
           <div class="card" style="margin-bottom:20px">
-            <div class="card-title">Syllabus / Topic</div>
+            <div class="card-title">Institution &amp; language</div>
+            <div class="form-group"><label>School name</label><input type="text" id="tp-school-name" placeholder="e.g. Government Senior Secondary School" autocomplete="organization"></div>
+            <div class="form-group"><label>Question paper medium</label><div class="select-wrap"><select id="tp-medium"><option value="english">English</option><option value="hindi">Hindi</option><option value="urdu">Urdu</option></select></div></div>
+            <div class="form-group"><label>Duration (minutes)</label><input type="number" id="tp-duration" min="15" max="300" value="90" placeholder="e.g. 90"></div>
+          </div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-title">Syllabus / topic</div>
             <div class="form-group"><label>Subject</label><div class="select-wrap"><select id="tp-subject"><option value="">Select subject</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>History</option><option>Geography</option><option>Economics</option><option>Computer Science</option><option>Accounts</option><option>Business Studies</option><option>Other</option></select></div></div>
-            <div class="form-group"><label>Class / Grade</label><div class="select-wrap"><select id="tp-class"><option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
+            <div class="form-group"><label>Class / grade</label><div class="select-wrap"><select id="tp-class"><option value="">Select class</option><option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option><option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div></div>
             <div class="form-group"><label>Syllabus / Topics</label><textarea id="tp-syllabus" placeholder="e.g. Chapter 3: Quadratic Equations..."></textarea></div>
             <div class="form-group">
               <label>Upload Syllabus File (Optional)</label>
@@ -532,19 +539,19 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
               </div>
             </div>
             <div class="divider"></div>
-            <button class="btn btn-primary btn-full" onclick="generateTestPaper()">✦ Generate Test Paper</button>
+            <button class="btn btn-primary btn-full" onclick="generateTestPaper()">✦ Generate test paper</button>
           </div>
         </div>
 
         <div>
           <div id="paper-placeholder" class="card" style="text-align:center;padding:60px 24px">
             <div style="font-size:48px;margin-bottom:16px;opacity:0.3">📄</div>
-            <p style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;color:var(--muted)">Test Paper will appear here</p>
-            <p style="font-size:13px;color:var(--dim)">Fill in the details and click Generate</p>
+            <p style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;color:var(--muted)">The test paper will appear here</p>
+            <p style="font-size:13px;color:var(--dim)">Complete the form and select Generate test paper.</p>
           </div>
           <div class="paper-output" id="paper-output">
             <div class="paper-header">
-              <div class="paper-school">Saksham AI — Delhi Schools</div>
+              <div class="paper-school" id="po-school">School name</div>
               <div class="paper-title" id="po-title">Test Paper</div>
               <div class="paper-meta" id="po-meta"></div>
             </div>
@@ -554,7 +561,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:56px 24p
               <button class="btn btn-ghost" onclick="generateTestPaper()">↺ Regenerate</button>
             </div>
           </div>
-          <div id="paper-loading" style="display:none"><div class="loading"><div class="spinner"></div><span>AI test paper bana raha hai...</span></div></div>
+          <div id="paper-loading" style="display:none"><div class="loading"><div class="spinner"></div><span>Generating your test paper…</span></div></div>
         </div>
       </div>
     </div>
@@ -609,10 +616,12 @@ window.doRegister = async () => {
   const email=document.getElementById('reg-email').value.trim();
   const uid=document.getElementById('reg-uid').value.trim();
   const password=document.getElementById('reg-password').value;
+  const passwordConfirm=document.getElementById('reg-password-confirm').value;
   if(!name){showRegError('Please enter your full name.');return;}
   if(!email){showRegError('Please enter your email address.');return;}
   if(!uid){showRegError('Please enter your School ID.');return;}
   if(password.length<6){showRegError('Password must be at least 6 characters.');return;}
+  if(password!==passwordConfirm){showRegError('The passwords you entered do not match. Please confirm your password.');return;}
   const btn=document.getElementById('register-btn');
   btn.disabled=true;btn.textContent='Creating...';
   try{
@@ -622,7 +631,8 @@ window.doRegister = async () => {
     const userCred=await createUserWithEmailAndPassword(auth,email,password);
     await updateProfile(userCred.user,{displayName:name});
     await setDoc(doc(db,'teachers',userCred.user.uid),{name,email,teacherId:uid,createdAt:new Date().toISOString()});
-    showToast('✓ Account ban gaya! Welcome '+name,'success');
+    showToast('Account created successfully. Welcome, '+name+'.','success');
+    document.getElementById('reg-password-confirm').value='';
   }catch(err){
     showRegError(getFirebaseError(err.code));
     btn.disabled=false;btn.textContent='Create Account →';
@@ -648,20 +658,20 @@ window.doLogin = async () => {
       emailToUse=snap.docs[0].data().email;
     }
     await signInWithEmailAndPassword(auth,emailToUse,password);
-    showToast('✓ Login successful! Welcome back.','success');
+    showToast('You have signed in successfully. Welcome back.','success');
   }catch(err){
     showLoginError(getFirebaseError(err.code));
     btn.disabled=false;btn.textContent='Sign In →';
   }
 };
 
-window.doLogout = async () => { await signOut(auth); showToast('Logged out!',''); };
+window.doLogout = async () => { await signOut(auth); showToast('You have been signed out.',''); };
 
 function showLoginError(msg){const el=document.getElementById('login-error');el.textContent=msg;el.style.display='block';}
 function showRegError(msg){const el=document.getElementById('register-error');el.textContent=msg;el.style.display='block';}
 function getFirebaseError(code){
-  const e={'auth/email-already-in-use':'Ye email pehle se registered hai!','auth/invalid-email':'Email format galat hai!','auth/wrong-password':'Password galat hai!','auth/user-not-found':'Account nahi mila!','auth/weak-password':'Password zyada strong chahiye!','auth/too-many-requests':'Bahut zyada try! Thodi der baad try karo.','auth/network-request-failed':'Network error!','auth/invalid-credential':'Email ya password galat hai!'};
-  return e[code]||'Kuch error aaya! Try karo.';
+  const e={'auth/email-already-in-use':'This email address is already registered.','auth/invalid-email':'The email address format is invalid.','auth/wrong-password':'Incorrect password.','auth/user-not-found':'No account was found with these credentials.','auth/weak-password':'Please choose a stronger password.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/network-request-failed':'Network error. Please check your connection.','auth/invalid-credential':'Invalid email or password.'};
+  return e[code]||'An error occurred. Please try again.';
 }
 </script>
 
@@ -717,7 +727,7 @@ const API_URL="https://school-ai-backend-6tta.onrender.com";
 let schoolData={teachers:[],classes:[],subjects:[]};
 
 window.loadDemoData=async()=>{
-  showToast('⏳ Demo data load ho raha hai...','');
+  showToast('Loading demonstration data…','');
   try{
     const teachers=await fetch(`${API_URL}/teachers/1`).then(r=>r.json());
     if(teachers&&teachers.length>0){
@@ -725,9 +735,9 @@ window.loadDemoData=async()=>{
       schoolData.classes=await fetch(`${API_URL}/classes/1`).then(r=>r.json());
       schoolData.subjects=await fetch(`${API_URL}/subjects/1`).then(r=>r.json());
       afterDataLoaded();
-      showToast(`✓ ${teachers.length} teachers load ho gaye!`,'success');
-    }else{showToast('❌ Koi data nahi mila!','error');}
-  }catch{showToast('❌ Backend se connect nahi ho pa raha!','error');}
+      showToast(teachers.length+' teacher records loaded successfully.','success');
+    }else{showToast('No data was returned.','error');}
+  }catch{showToast('Unable to reach the server. Please try again later.','error');}
 };
 
 function afterDataLoaded(){
@@ -752,7 +762,8 @@ function renderTeacherList(teachers){
     const leaveInfo=absentTeachers.get(t.name);
     const absentClass=leaveInfo?`absent-${leaveInfo.type}`:'';
     const tagHtml=leaveInfo?leaveTagHtml(leaveInfo.type):`<span class="teacher-workload">${t.workload} slots</span>`;
-    list.innerHTML+=`<div class="teacher-item ${absentClass}" onclick="onTeacherClick('${t.name}')"><div class="teacher-avatar">${initials}</div><div class="teacher-info"><div class="teacher-name">${t.name}</div><div class="teacher-subject">${t.subject}</div></div>${tagHtml}</div>`;
+    const safeName=JSON.stringify(t.name);
+    list.innerHTML+=`<div class="teacher-item ${absentClass}" onclick="onTeacherClick(${safeName})"><div class="teacher-avatar">${initials}</div><div class="teacher-info"><div class="teacher-name">${t.name}</div><div class="teacher-subject">${t.subject}</div></div>${tagHtml}</div>`;
   });
 }
 function leaveTagHtml(type){
@@ -768,7 +779,8 @@ window.onTeacherClick=(name)=>{
 function showLeavePopup(name){
   const teacher=schoolData.teachers.find(t=>t.name===name);
   const popup=document.createElement('div');popup.className='leave-popup';popup.id='leave-popup';
-  popup.innerHTML=`<div class="leave-popup-card"><div class="leave-popup-name">${name}</div><div class="leave-popup-sub">${teacher?teacher.subject:''} · Select leave type</div><div class="leave-options"><div class="leave-option" onclick="setLeave('${name}','full')"><div class="leave-option-icon icon-full">🔴</div><div class="leave-option-text"><p>Full Day Leave</p><small>Absent for all periods (1–8)</small></div></div><div class="leave-option" onclick="setLeave('${name}','first')"><div class="leave-option-icon icon-first">🟡</div><div class="leave-option-text"><p>First Half Leave</p><small>Absent for periods 1–4 only</small></div></div><div class="leave-option" onclick="setLeave('${name}','second')"><div class="leave-option-icon icon-second">🟣</div><div class="leave-option-text"><p>Second Half Leave</p><small>Absent for periods 5–8 only</small></div></div></div><button class="leave-cancel" onclick="closeLeavePopup()">Cancel</button></div>`;
+  const n=JSON.stringify(name);
+  popup.innerHTML=`<div class="leave-popup-card"><div class="leave-popup-name">${name}</div><div class="leave-popup-sub">${teacher?teacher.subject:''} · Select absence pattern</div><div class="leave-options"><div class="leave-option" onclick="setLeave(${n},'full')"><div class="leave-option-icon icon-full">🔴</div><div class="leave-option-text"><p>Full day</p><small>Absent for all periods (1–8)</small></div></div><div class="leave-option" onclick="setLeave(${n},'first')"><div class="leave-option-icon icon-first">🟡</div><div class="leave-option-text"><p>First half</p><small>Absent for periods 1–4 only</small></div></div><div class="leave-option" onclick="setLeave(${n},'second')"><div class="leave-option-icon icon-second">🟣</div><div class="leave-option-text"><p>Second half</p><small>Absent for periods 5–8 only</small></div></div></div><button class="leave-cancel" onclick="closeLeavePopup()">Cancel</button></div>`;
   document.body.appendChild(popup);
   popup.addEventListener('click',e=>{if(e.target===popup)closeLeavePopup();});
 }
@@ -816,7 +828,7 @@ window.findSubstitutes=()=>{
     const rankLabels=['1st','2nd','3rd'],rankClass=['rank-1','rank-2','rank-3'];
     document.getElementById('results-container').innerHTML=scored.length?`<div class="result-list">${scored.map((t,i)=>{
       const scoreClass=t.score>=10?'score-high':t.score>=7?'score-mid':'score-low',isMatch=t.subject.toLowerCase()===subject.toLowerCase();
-      return`<div class="result-card"><div class="rank-badge ${rankClass[i]}">${rankLabels[i]}</div><div class="result-info"><div class="result-name">${t.name}</div><div class="result-subject">${t.subject}<span class="subject-match ${isMatch?'match-yes':'match-no'}" style="margin-left:8px">${isMatch?'✓ Subject Match':'~ Near Match'}</span></div></div><div class="result-metrics"><div class="metric"><div class="metric-val ${scoreClass}">${t.score}</div><div class="metric-label">AI Score</div></div><div class="metric"><div class="metric-val">${t.performance}</div><div class="metric-label">Rating</div></div><div class="metric"><div class="metric-val">${t.workload}</div><div class="metric-label">Workload</div></div></div></div>`;
+      return`<div class="result-card"><div class="rank-badge ${rankClass[i]}">${rankLabels[i]}</div><div class="result-info"><div class="result-name">${t.name}</div><div class="result-subject">${t.subject}<span class="subject-match ${isMatch?'match-yes':'match-no'}" style="margin-left:8px">${isMatch?'Exact subject match':'Related subject'}</span></div></div><div class="result-metrics"><div class="metric"><div class="metric-val ${scoreClass}">${t.score}</div><div class="metric-label">AI Score</div></div><div class="metric"><div class="metric-val">${t.performance}</div><div class="metric-label">Rating</div></div><div class="metric"><div class="metric-val">${t.workload}</div><div class="metric-label">Workload</div></div></div></div>`;
     }).join('')}</div>`:`<div class="empty-state"><div class="icon">😔</div><p>No free teachers found.</p></div>`;
   },900);
 };
@@ -834,7 +846,7 @@ window.resetAll=()=>{
   absentTeachers.clear();
   ['teacher-search','sel-day','sel-period','sel-class','sel-subject'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const rc=document.getElementById('results-container');
-  if(rc)rc.innerHTML='<div class="loading"><div class="spinner"></div><span>Finding best substitutes...</span></div>';
+  if(rc)rc.innerHTML='<div class="loading"><div class="spinner"></div><span>Identifying suitable cover teachers…</span></div>';
   schoolData={teachers:[],classes:[],subjects:[]};
   const fsa=document.getElementById('file-success-area');if(fsa)fsa.innerHTML='';
   goToStep(1);
@@ -849,10 +861,10 @@ document.getElementById('file-input').addEventListener('change',e=>{if(e.target.
 
 async function handleFile(file){
   const allowed=['csv','xlsx','xls'],ext=file.name.split('.').pop().toLowerCase();
-  if(!allowed.includes(ext)){showToast('❌ Only CSV or Excel files allowed','error');return;}
-  document.getElementById('file-success-area').innerHTML=`<div class="file-success" style="border-color:#f0a50033;background:#f0a50011;"><div class="icon">⏳</div><div class="file-success-info"><p>${file.name}</p><small id="upload-status">Server se connect ho raha hai...</small></div></div>`;
+  if(!allowed.includes(ext)){showToast('Only CSV or Excel files are permitted.','error');return;}
+  document.getElementById('file-success-area').innerHTML=`<div class="file-success" style="border-color:#f0a50033;background:#f0a50011;"><div class="icon">⏳</div><div class="file-success-info"><p>${file.name}</p><small id="upload-status">Connecting to the server…</small></div></div>`;
   const statusEl=()=>document.getElementById('upload-status');
-  try{statusEl().textContent='Server start ho raha hai...';await wakeUpBackend();}catch(e){}
+  try{statusEl().textContent='Starting the server…';await wakeUpBackend();}catch(e){}
   if(statusEl())statusEl().textContent=`${(file.size/1024).toFixed(1)} KB · Uploading...`;
   const formData=new FormData();
   formData.append('school_name','My School');
@@ -867,12 +879,12 @@ async function handleFile(file){
         fetch(`${API_URL}/subjects/${data.school_id}`).then(r=>r.json()),
       ]);
       schoolData.teachers=teachers;schoolData.classes=classes;schoolData.subjects=subjects;schoolData.school_id=data.school_id;
-      document.getElementById('file-success-area').innerHTML=`<div class="file-success"><div class="icon">✅</div><div class="file-success-info"><p>${file.name}</p><small>${teachers.length} teachers · ${classes.length} classes · Loaded!</small></div></div>`;
-      afterDataLoaded();showToast(`✓ ${teachers.length} teachers load ho gaye!`,'success');
-    }else{showToast('❌ Upload failed: '+(data.error||'Unknown error'),'error');}
+      document.getElementById('file-success-area').innerHTML=`<div class="file-success"><div class="icon">✅</div><div class="file-success-info"><p>${file.name}</p><small>${teachers.length} teachers · ${classes.length} classes · loaded</small></div></div>`;
+      afterDataLoaded();showToast(teachers.length+' teacher records loaded successfully.','success');
+    }else{showToast('Upload failed: '+(data.error||'Unknown error'),'error');}
   }catch(err){
-    document.getElementById('file-success-area').innerHTML=`<div class="file-success" style="border-color:#e0555533;background:#e0555511;"><div class="icon">❌</div><div class="file-success-info"><p>Upload failed</p><small>Dobara try karo.</small></div></div>`;
-    showToast('❌ Upload failed!','error');
+    document.getElementById('file-success-area').innerHTML=`<div class="file-success" style="border-color:#e0555533;background:#e0555511;"><div class="icon">❌</div><div class="file-success-info"><p>Upload failed</p><small>Please try again.</small></div></div>`;
+    showToast('Upload failed. Please try again.','error');
   }
 }
 
@@ -902,14 +914,36 @@ window.selectDifficulty=(level,el)=>{
   el.classList.add('sel-'+level);
 };
 
+function mediumPromptLine(medium){
+  if(medium==='hindi')return 'LANGUAGE: Write the entire paper (all section titles, questions, and MCQ options) in Hindi, using Devanagari script. Do not use English for question text.';
+  if(medium==='urdu')return 'LANGUAGE: Write the entire paper (all section titles, questions, and MCQ options) in Urdu, using the Arabic script. Do not use English for question text.';
+  return 'LANGUAGE: Write the entire paper in clear, formal English.';
+}
+
+function jsonOutputRules(medium){
+  const base='OUTPUT FORMAT (mandatory): Return exactly one JSON object. Do not wrap it in markdown code fences. Do not add any text before or after the JSON. Every string value must be strictly valid JSON: never place an unescaped double-quote character inside any string value; never insert raw line breaks inside a string.';
+  if(medium==='urdu'||medium==='hindi'){
+    return base+' For Urdu and Hindi text, do not use the ASCII double-quote character inside questions or options; use appropriate script punctuation instead.';
+  }
+  return base;
+}
+
 window.generateTestPaper=async()=>{
-  const subject=document.getElementById('tp-subject').value,cls=document.getElementById('tp-class').value,syllabus=document.getElementById('tp-syllabus').value.trim();
-  if(!subject){showToast('❌ Subject select karo!','error');return;}
-  if(!cls){showToast('❌ Class select karo!','error');return;}
-  if(!syllabus&&!syllabusFile){showToast('❌ Syllabus/Topics likho ya file upload karo!','error');return;}
-  if(!selectedMarks){showToast('❌ Total marks select karo!','error');return;}
-  if(!selectedType){showToast('❌ Question type select karo!','error');return;}
-  if(!selectedDifficulty){showToast('❌ Difficulty level select karo!','error');return;}
+  const subject=document.getElementById('tp-subject').value;
+  const cls=document.getElementById('tp-class').value;
+  const syllabus=document.getElementById('tp-syllabus').value.trim();
+  const schoolName=(document.getElementById('tp-school-name').value||'').trim()||'School';
+  const medium=document.getElementById('tp-medium').value;
+  let durationMin=parseInt(document.getElementById('tp-duration').value,10);
+  if(isNaN(durationMin)||durationMin<15)durationMin=90;
+  if(durationMin>300)durationMin=300;
+
+  if(!subject){showToast('Please select a subject.','error');return;}
+  if(!cls){showToast('Please select a class.','error');return;}
+  if(!syllabus&&!syllabusFile){showToast('Please enter syllabus or topics, or upload a syllabus file.','error');return;}
+  if(!selectedMarks){showToast('Please select total marks.','error');return;}
+  if(!selectedType){showToast('Please select a question type.','error');return;}
+  if(!selectedDifficulty){showToast('Please select a difficulty level.','error');return;}
 
   document.getElementById('paper-placeholder').style.display='none';
   document.getElementById('paper-output').classList.remove('visible');
@@ -917,10 +951,12 @@ window.generateTestPaper=async()=>{
 
   let typeDesc=selectedType;
   if(selectedType==='mix'){const obj=document.getElementById('mix-obj').value,sub=document.getElementById('mix-sub').value;typeDesc=`mix (${obj}% objective, ${sub}% subjective)`;}
-  const numQLine=selectedQuestions?`\n- Number of Questions: exactly ${selectedQuestions} questions`:'';
-  const diffDesc=selectedDifficulty==='easy'?'Easy (basic recall, simple questions)':selectedDifficulty==='medium'?'Medium (application and understanding)':'Hard (analysis, higher order thinking, challenging)';
+  const numQLine=selectedQuestions?`\n- Number of questions: exactly ${selectedQuestions}`:'';
+  const diffDesc=selectedDifficulty==='easy'?'Easy (basic recall, straightforward items)':selectedDifficulty==='medium'?'Medium (application and understanding)':'Hard (analysis, higher-order thinking)';
 
-  const prompt=`You are an expert teacher creating a test paper for Indian school students.\n\nCreate a complete test paper:\n- Subject: ${subject}\n- Class: ${cls}\n- Total Marks: ${selectedMarks}\n- Question Type: ${typeDesc}${numQLine}\n- Difficulty Level: ${diffDesc}\n- Syllabus: ${syllabus||'(see uploaded file)'}\n\nIMPORTANT: Questions MUST match the difficulty level exactly.\nReturn ONLY a JSON object:\n{"title":"Test Paper title","sections":[{"title":"Section A","questions":[{"num":1,"text":"Question?","marks":1,"type":"mcq","options":["A) opt1","B) opt2","C) opt3","D) opt4"]}]}]}\n\nRules: Total marks must add up to exactly ${selectedMarks}. Return ONLY valid JSON.`;
+  const langBlock=mediumPromptLine(medium);
+  const jsonRules=jsonOutputRules(medium);
+  const prompt=`You are an experienced teacher preparing an examination paper for Indian school students.\n\n${langBlock}\n\n${jsonRules}\n\nCreate one complete test paper with the following parameters:\n- Subject: ${subject}\n- Class: ${cls}\n- Total marks: ${selectedMarks}\n- Duration (for reference): ${durationMin} minutes\n- Institution name to reflect in the title line: ${schoolName}\n- Question type: ${typeDesc}${numQLine}\n- Difficulty: ${diffDesc}\n- Syllabus / content: ${syllabus||'(refer to the uploaded file if provided)'}\n\nThe questions must align with the stated difficulty. All content must follow the LANGUAGE rule above.\n\nReturn ONLY a JSON object of this shape:\n{"title":"Appropriate title for the paper","sections":[{"title":"Section name","questions":[{"num":1,"text":"Question text","marks":1,"type":"mcq","options":["A) ...","B) ...","C) ...","D) ..."]}]}]}\n\nRules: Total marks across all questions must equal exactly ${selectedMarks}. The response must be strictly valid JSON parseable by a standard parser (UTF-8).`;
 
   try{
     const formData=new FormData();
@@ -928,26 +964,29 @@ window.generateTestPaper=async()=>{
     if(syllabusFile)formData.append('syllabus_file',syllabusFile);
     const res=await fetch(`${API_URL}/generate_test`,{method:'POST',body:formData});
     const data=await res.json();
-    if(data.error){showToast('❌ '+data.error,'error');document.getElementById('paper-loading').style.display='none';document.getElementById('paper-placeholder').style.display='block';return;}
-    lastPaperData={subject,cls,marks:selectedMarks,type:selectedType,difficulty:selectedDifficulty,paper:data.paper};
-    renderPaper(data.paper,subject,cls,selectedMarks,selectedDifficulty);
+    if(data.error){showToast(String(data.error),'error');document.getElementById('paper-loading').style.display='none';document.getElementById('paper-placeholder').style.display='block';return;}
+    lastPaperData={subject,cls,marks:selectedMarks,type:selectedType,difficulty:selectedDifficulty,paper:data.paper,schoolName,medium,durationMin};
+    renderPaper(data.paper,subject,cls,selectedMarks,selectedDifficulty,schoolName,medium,durationMin);
   }catch(err){
-    showToast('❌ Generation failed!','error');
+    showToast('Test paper generation failed. Please try again.','error');
     document.getElementById('paper-loading').style.display='none';
     document.getElementById('paper-placeholder').style.display='block';
   }
 };
 
-function renderPaper(paper,subject,cls,marks,diff){
+function renderPaper(paper,subject,cls,marks,diff,schoolName,medium,durationMin){
   document.getElementById('paper-loading').style.display='none';
-  document.getElementById('po-title').textContent=paper.title||`${subject} Test Paper`;
-  const diffBadge=diff==='easy'?'🟢 Easy':diff==='medium'?'🟡 Medium':'🔴 Hard';
-  document.getElementById('po-meta').innerHTML=`<span>📚 ${subject}</span><span>🎓 ${cls}</span><span>📊 Total: ${marks} Marks</span><span>⏱ ${Math.max(30,marks*1.5)} mins</span><span>${diffBadge}</span>`;
+  document.getElementById('po-school').textContent=schoolName;
+  document.getElementById('po-title').textContent=paper.title||`${subject} — Assessment`;
+  const diffBadge=diff==='easy'?'Easy':diff==='medium'?'Medium':'Hard';
+  const medLabel=medium==='hindi'?'Hindi':medium==='urdu'?'Urdu':'English';
+  document.getElementById('po-meta').innerHTML=`<span>${subject}</span><span>${cls}</span><span>Total: ${marks} marks</span><span>Duration: ${durationMin} minutes</span><span>Medium: ${medLabel}</span><span>Difficulty: ${diffBadge}</span>`;
+  const dirAttr=medium==='urdu'?' dir="rtl"':'';
   let html='';
   (paper.sections||[]).forEach(section=>{
-    html+=`<div class="paper-section"><div class="paper-section-title">${section.title}</div>`;
+    html+=`<div class="paper-section"><div class="paper-section-title"${dirAttr}>${section.title}</div>`;
     (section.questions||[]).forEach((q,idx)=>{
-      html+=`<div class="question-item"><span class="q-num">Q${q.num||idx+1}.</span><div style="flex:1"><div class="q-text">${q.text}</div>`;
+      html+=`<div class="question-item"${dirAttr}><span class="q-num">Q${q.num||idx+1}.</span><div style="flex:1"><div class="q-text">${q.text}</div>`;
       if(q.options&&q.options.length)html+=`<div class="mcq-options">${q.options.map(o=>`<div class="mcq-option">${o}</div>`).join('')}</div>`;
       if(q.type==='short')html+=`<div style="margin-top:8px;height:40px;border-bottom:1px dashed var(--border2)"></div>`;
       if(q.type==='long')html+=`<div style="margin-top:8px;height:80px;border-bottom:1px dashed var(--border2)"></div>`;
@@ -957,7 +996,12 @@ function renderPaper(paper,subject,cls,marks,diff){
   });
   document.getElementById('po-content').innerHTML=html;
   document.getElementById('paper-output').classList.add('visible');
-  showToast('✓ Test paper ready!','success');
+  showToast('Test paper generated successfully.','success');
+}
+
+function escHtml(s){
+  if(s==null||s===undefined)return'';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 window.downloadPDF=()=>{
@@ -965,13 +1009,20 @@ window.downloadPDF=()=>{
   const paper=lastPaperData;
   const printWindow=window.open('','_blank');
   const diffText=paper.difficulty==='easy'?'Easy':paper.difficulty==='medium'?'Medium':'Hard';
-  let html=`<html><head><title>${paper.subject} Test Paper</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#000}h1{text-align:center;font-size:20px}h2{font-size:14px;margin:20px 0 10px;border-bottom:1px solid #ccc;padding-bottom:4px}.meta{text-align:center;font-size:13px;color:#666;margin-bottom:20px}.q{margin-bottom:14px;font-size:14px}.opts{margin-left:20px;color:#444;font-size:13px}</style></head><body>`;
-  html+=`<h1>${paper.paper.title||paper.subject+' Test Paper'}</h1><div class="meta">Class: ${paper.cls} | Subject: ${paper.subject} | Total Marks: ${paper.marks} | Difficulty: ${diffText} | Time: ${Math.max(30,paper.marks*1.5)} mins</div>`;
+  const medLabel=paper.medium==='hindi'?'Hindi':paper.medium==='urdu'?'Urdu':'English';
+  const school=paper.schoolName||'School';
+  const dur=paper.durationMin||90;
+  const isRtl=paper.medium==='urdu';
+  const fontFam=isRtl?"font-family:'Noto Nastaliq Urdu','Segoe UI',Tahoma,sans-serif":"font-family:'Nirmala UI','Mangal',Arial,sans-serif";
+  const bodyFont=paper.medium==='hindi'?fontFam:paper.medium==='urdu'?fontFam:'font-family:Arial,sans-serif';
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(paper.subject)} — Test paper</title><style>body{${bodyFont};max-width:800px;margin:40px auto;color:#000;${isRtl?'direction:rtl;text-align:right;':''}} .school{font-size:14px;font-weight:700;text-align:center;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;color:#333} h1{text-align:center;font-size:20px;margin-bottom:8px}h2{font-size:14px;margin:20px 0 10px;border-bottom:1px solid #ccc;padding-bottom:4px}.meta{text-align:center;font-size:13px;color:#666;margin-bottom:20px}.q{margin-bottom:14px;font-size:14px}.opts{margin-left:20px;color:#444;font-size:13px}${isRtl?'.opts{margin-right:20px;margin-left:0}':''}</style></head><body>`;
+  html+=`<div class="school">${escHtml(school)}</div>`;
+  html+=`<h1>${escHtml(paper.paper.title||paper.subject+' — Assessment')}</h1><div class="meta">Class: ${escHtml(paper.cls)} | Subject: ${escHtml(paper.subject)} | Total marks: ${paper.marks} | Medium: ${medLabel} | Difficulty: ${diffText} | Duration: ${dur} minutes</div>`;
   (paper.paper.sections||[]).forEach(section=>{
-    html+=`<h2>${section.title}</h2>`;
+    html+=`<h2>${escHtml(section.title)}</h2>`;
     (section.questions||[]).forEach((q,i)=>{
-      html+=`<div class="q"><b>Q${q.num||i+1}.</b> ${q.text} <small>[${q.marks} mark${q.marks>1?'s':''}]</small>`;
-      if(q.options)html+=`<div class="opts">${q.options.map(o=>`<div>${o}</div>`).join('')}</div>`;
+      html+=`<div class="q"><b>Q${q.num||i+1}.</b> ${escHtml(q.text)} <small>[${q.marks} mark${q.marks>1?'s':''}]</small>`;
+      if(q.options)html+=`<div class="opts">${q.options.map(o=>`<div>${escHtml(o)}</div>`).join('')}</div>`;
       html+=`</div>`;
     });
   });
@@ -979,7 +1030,7 @@ window.downloadPDF=()=>{
   printWindow.document.write(html);
   printWindow.document.close();
   printWindow.print();
-  showToast('✓ PDF download ho gaya!','success');
+  showToast('Print dialog opened. Save as PDF if required.','success');
 };
 
 function showToast(msg,type=''){
